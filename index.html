@@ -14,9 +14,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
-    <!-- NoSleep.js for TV Anti-Sleep -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
-    
     <style>
         /* ========================================================
            TV OPTIMIZED CSS (16:9 Aspect Ratio Focus using vh/vw)
@@ -231,7 +228,7 @@
     <!-- START SCREEN (Requires 1 click to enable Audio & Fullscreen on TV) -->
     <div id="start-overlay" onclick="startApp()">
         <button class="start-btn">Start Live TV Display</button>
-        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക<br>(തുടങ്ങുമ്പോൾ തനിയെ Full-screen ആകും)</p>
+        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">OK</p>
     </div>
 
     <!-- FEST GALLERY OVERLAY (2-min interval, One show only) -->
@@ -390,7 +387,6 @@
 
     <script>
         var appStarted = false;
-        var noSleep = new NoSleep(); // Initialize NoSleep.js for TV
         var tvWakeLockAudio = null; // Global reference for continuous background media
 
         // Zero Gravity Background Generator (TV Optimized)
@@ -416,22 +412,73 @@
         }
         createZeroGravity();
         
+        // ULTIMATE TV WAKE LOCK (Canvas Video Stream Hack)
+        // Fools the TV OS into thinking a live movie is playing, preventing Eco-Standby
+        function setupUltimateTVWakeLock() {
+            try {
+                // 1. Create a hidden canvas
+                var canvas = document.createElement('canvas');
+                canvas.width = 2; canvas.height = 2;
+                canvas.style.position = 'absolute';
+                canvas.style.opacity = '0';
+                canvas.style.pointerEvents = 'none';
+                document.body.appendChild(canvas);
+                var ctx = canvas.getContext('2d');
+                
+                // 2. Draw a continuously changing pixel to prevent static frame detection by TV AI
+                setInterval(function() {
+                    ctx.fillStyle = Math.random() > 0.5 ? '#010101' : '#000000';
+                    ctx.fillRect(0,0,2,2);
+                }, 1000);
+
+                // 3. Convert the canvas into a 1FPS live video stream
+                if (canvas.captureStream) {
+                    var stream = canvas.captureStream(1); 
+                    var wakeVideo = document.createElement('video');
+                    wakeVideo.srcObject = stream;
+                    wakeVideo.setAttribute('playsinline', '');
+                    wakeVideo.setAttribute('muted', '');
+                    wakeVideo.autoplay = true;
+                    wakeVideo.muted = true;
+                    wakeVideo.loop = true;
+                    
+                    // Keep it in the DOM but totally invisible to the audience
+                    wakeVideo.style.position = 'fixed';
+                    wakeVideo.style.top = '0';
+                    wakeVideo.style.left = '0';
+                    wakeVideo.style.width = '1px';
+                    wakeVideo.style.height = '1px';
+                    wakeVideo.style.opacity = '0.001';
+                    wakeVideo.style.zIndex = '-9999';
+                    wakeVideo.style.pointerEvents = 'none';
+                    document.body.appendChild(wakeVideo);
+                    
+                    var playProm = wakeVideo.play();
+                    if(playProm !== undefined) playProm.catch(function(e){});
+                }
+
+                // 4. Samsung Tizen specific persistent lock (Re-requests every 1 minute)
+                if (typeof tizen !== 'undefined' && tizen.power) {
+                    setInterval(function() {
+                        try { tizen.power.request('SCREEN', 'SCREEN_NORMAL'); } catch(e){}
+                    }, 60000); 
+                }
+            } catch(e) {}
+        }
+
         // Anti-Sleep Hack for TV
         var wakeLockObj = null;
         async function preventSleep() {
             try {
-                if ('wakeLock' in navigator && typeof navigator.wakeLock.request === 'function') { 
+                if ('wakeLock' in navigator) { 
                     if(wakeLockObj !== null) { 
-                        var releasePromise = wakeLockObj.release();
-                        if(releasePromise && typeof releasePromise.catch === 'function') releasePromise.catch(function(){}); 
+                        await wakeLockObj.release().catch(function(){}); 
                     }
-                    // Catch the rejection safely so it doesn't throw an unhandled error
-                    var reqPromise = navigator.wakeLock.request('screen');
-                    if(reqPromise && typeof reqPromise.catch === 'function') {
-                        wakeLockObj = await reqPromise.catch(function(err){ return null; });
-                    }
+                    wakeLockObj = await navigator.wakeLock.request('screen');
                 }
-            } catch(e) {}
+            } catch(e) {
+                // Silently ignore NotAllowedError in sandboxed environments
+            }
             
             try {
                 // Samsung Tizen TV support
@@ -494,15 +541,8 @@
         }
 
         function startApp() {
-            try {
-                // Enable NoSleep.js and explicitly catch the promise rejection if the browser blocks it
-                var nsPromise = noSleep.enable();
-                if (nsPromise && typeof nsPromise.catch === 'function') {
-                    nsPromise.catch(function(e) { console.log("WakeLock API blocked, relying on audio fallback."); });
-                }
-            } catch(e) {}
-            
             preventSleep();
+            setupUltimateTVWakeLock(); // Launch the extreme TV wake lock video stream
             toggleFullScreen(); // Go Full Screen
             
             document.getElementById('start-overlay').style.display = 'none';
