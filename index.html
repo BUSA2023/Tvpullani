@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>മെഹ്ഫിലെ നൂർ 2026 - Result Display</title>
+    <title>മെഹ്ഫിലെ നൂർ 2026 - TV Display</title>
     
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800&family=Outfit:wght@400;800;900&display=swap" rel="stylesheet">
@@ -69,7 +69,8 @@
 
         /* HEADER & TITLE */
         .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
-        .fest-logo-img { height: 9vh; object-fit: contain; filter: drop-shadow(0 0 2vh rgba(56, 189, 248, 0.6)); }
+        /* YOUR LOGO HEIGHT IS ADJUSTED HERE */
+        .fest-logo-img { height: 9vh; max-height: 80px; object-fit: contain; filter: drop-shadow(0 0 2vh rgba(56, 189, 248, 0.6)); }
         
         .page-title { 
             text-align: center; font-size: 3vh; color: #fbbf24; margin-bottom: 2vh; 
@@ -172,16 +173,17 @@
         #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000; box-shadow: 0 1vh 3vh rgba(0,0,0,0.5); }
         #toast.show { transform: translateY(0); }
 
-        /* --- FULL SCREEN GALLERY OVERLAY (2-Min Auto Loop) --- */
+        /* --- FULL SCREEN GALLERY OVERLAY (ONE-TIME PLAY) --- */
         #gallery-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 9500; display: none; opacity: 0;
             transition: opacity 1s ease-in-out;
         }
         .gallery-media {
-            width: 100%; height: 100%; object-fit: contain; /* Prevents cropping */
+            width: 100%; height: 100%; object-fit: contain; /* Prevents cropping on TV */
             position: absolute; top: 0; left: 0; opacity: 0;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1s ease-in-out;
+            background: black; /* Black background for letterboxing */
         }
         .gallery-media.active { opacity: 1; }
         .gallery-badge {
@@ -191,8 +193,7 @@
             border: 0.2vh solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
             display: flex; align-items: center; gap: 2vw; z-index: 100;
         }
-
-        /* Responsive Fallbacks for smaller screens testing */
+        /* Mobile specific fallback */
         @media (max-width: 1024px) {
             .p-name-txt { font-size: 1.8vh; max-width: 25vw; }
             .pt-table td { font-size: 1.8vh; padding: 0.5vh; }
@@ -209,13 +210,13 @@
     <div class="zero-gravity-bg" id="zg-bg"></div>
     <div id="flash-screen"></div>
 
-    <!-- START SCREEN (Requires 1 click to enable Audio on TV) -->
+    <!-- START SCREEN (Requires 1 click to enable Audio & Fullscreen on TV) -->
     <div id="start-overlay" onclick="startApp()">
         <button class="start-btn">Start Live TV Display</button>
-        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക<br>(Audio & Auto-Play സജ്ജമാക്കാൻ)</p>
+        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക<br>(തുടങ്ങുമ്പോൾ തനിയെ Full-screen ആകും)</p>
     </div>
 
-    <!-- FEST GALLERY OVERLAY (Appears every 2 mins) -->
+    <!-- FEST GALLERY OVERLAY (10-min interval, One show only) -->
     <div id="gallery-overlay">
         <div id="gallery-media-container"></div>
         <div class="gallery-badge">
@@ -234,6 +235,7 @@
         <!-- PAGE 1: SCORE & STATS -->
         <div id="view-1" class="view-container view-active">
             <div class="header">
+                <!-- SINGLE LOGO IMAGE -->
                 <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
             </div>
             <div class="page-title">ടീം പോയിന്റുകൾ (TOTAL SCORE)</div>
@@ -401,6 +403,7 @@
             } catch(e) {}
         }
 
+        // Helper for Audio Unlocking
         function unlockAudio(audioElem) {
             if(!audioElem) return;
             audioElem.muted = true;
@@ -414,17 +417,26 @@
             }
         }
 
-        function startApp() {
-            preventSleep();
-            
-            // Try to full screen
+        // FULL SCREEN API (Triggers on 'Start' button click)
+        function toggleFullScreen() {
             try {
                 var elem = document.documentElement;
-                if (!document.fullscreenElement) {
-                    if (elem.requestFullscreen) elem.requestFullscreen().catch(e=>{});
+                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                    if (elem.requestFullscreen) { 
+                        elem.requestFullscreen().catch(function(e){ console.log("Fullscreen error:", e); }); 
+                    }
+                    else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } // Safari
+                    else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); } // IE11
                 }
-            } catch(e) {}
+            } catch (e) {
+                console.log("Fullscreen not supported or blocked.");
+            }
+        }
 
+        function startApp() {
+            preventSleep();
+            toggleFullScreen(); // Go Full Screen
+            
             document.getElementById('start-overlay').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             
@@ -474,13 +486,13 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
-        /* --- FEST GALLERY LOGIC (Plays every 2 mins automatically on TV) --- */
+        /* --- FEST GALLERY LOGIC (Plays every 10 mins, ONE SHOW ONLY) --- */
         var galleryItems = []; 
         var currentGalleryIndex = 0;
         var galleryActive = false;
         
-        // 2 minutes interval timer (120,000 ms)
-        var galleryTriggerInterval = setInterval(triggerGallery, 120000); 
+        // 10 minutes interval timer (600,000 ms)
+        var galleryTriggerInterval = setInterval(triggerGallery, 600000); 
 
         function triggerGallery() {
             if (!galleryItems || galleryItems.length === 0 || galleryActive) return;
@@ -493,12 +505,13 @@
             var container = document.getElementById('gallery-media-container');
             container.innerHTML = ''; // clear old
 
+            // Build elements based on config
             galleryItems.forEach(function(item, index) {
                 var el;
                 if(item.type === 'video') {
                     el = document.createElement('video');
                     el.src = item.url; 
-                    el.muted = false; // Audio enabled since user clicked "Start" initially
+                    el.muted = false; // SOUND ENABLED (Since user clicked 'Start')
                     el.playsInline = true;
                     el.preload = 'auto'; // Faster load
                 } else {
@@ -511,44 +524,58 @@
             });
 
             currentGalleryIndex = 0;
-            playNextGalleryItem();
+            playNextGalleryItem(); // Starts the one-time show
         }
 
         function playNextGalleryItem() {
+            // Check if end of list (One full show completed)
             if(currentGalleryIndex >= galleryItems.length) {
-                // End of gallery -> Return to TV display
-                document.getElementById('gallery-overlay').style.opacity = '0';
-                setTimeout(function() { 
-                    document.getElementById('gallery-overlay').style.display = 'none'; 
-                    galleryActive = false;
-                    // Reset 2-min timer
-                    clearInterval(galleryTriggerInterval);
-                    galleryTriggerInterval = setInterval(triggerGallery, 120000);
-                }, 1000);
+                endGalleryShow();
                 return;
             }
 
             var item = galleryItems[currentGalleryIndex];
             var el = document.getElementById('g-media-' + currentGalleryIndex);
             
-            // Hide all
+            // Hide all media and pause any playing videos
             var allMedia = document.querySelectorAll('.gallery-media');
             allMedia.forEach(function(m) { 
                 m.classList.remove('active'); 
                 if(m.tagName === 'VIDEO') { m.pause(); m.currentTime = 0; } 
             });
             
-            // Show current
+            // Show current item
             el.classList.add('active');
+
             if(item.type === 'video') {
-                var p = el.play();
-                if(p !== undefined) p.catch(e => console.log("Video AutoPlay prevented", e));
+                var playPromise = el.play();
+                if(playPromise !== undefined) {
+                    playPromise.catch(function(e) { console.log("Video AutoPlay prevented", e); });
+                }
+                // When video finishes, automatically go to next item
                 el.onended = function() { playNextGalleryItem(); };
-                return;
+                currentGalleryIndex++;
+                return; // Exit function, wait for 'onended' event
             }
 
+            // If it's an image, wait for specified duration then go to next
             currentGalleryIndex++;
             setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
+        }
+
+        // Function to securely close gallery and resume TV tables
+        function endGalleryShow() {
+            document.getElementById('gallery-overlay').style.opacity = '0';
+            setTimeout(function() { 
+                document.getElementById('gallery-overlay').style.display = 'none'; 
+                var container = document.getElementById('gallery-media-container');
+                container.innerHTML = ''; // Clean up DOM
+                galleryActive = false;
+                
+                // Reset the 10-minute timer for the next show
+                clearInterval(galleryTriggerInterval);
+                galleryTriggerInterval = setInterval(triggerGallery, 600000);
+            }, 1000);
         }
 
         // MAIN TV CAROUSEL VIEW LOGIC (Plays every 15s)
@@ -556,7 +583,7 @@
         var totalViews = 6;
         
         setInterval(function() {
-            if(galleryActive) return; // Pause TV slide if gallery is playing
+            if(galleryActive) return; // Pause TV slide if gallery is currently playing
             for(var i=1; i<=totalViews; i++) document.getElementById('view-' + i).className = 'view-container';
             currentViewIndex++;
             if(currentViewIndex > totalViews) currentViewIndex = 1;
@@ -711,7 +738,7 @@
             var resHtml = "";
             if (sortedRes.length === 0) resHtml = "<h2 style='color:#64748b; grid-column:span 2; text-align:center;'>ഫലങ്ങൾ വന്നിട്ടില്ല...</h2>";
             
-            // TV Optimization: Show Max 5 Results to avoid layout blowing out vertically
+            // TV Optimization: Show Max 5 Results
             for(var r=0; r<Math.min(sortedRes.length, 5); r++) {
                 var latestRes = sortedRes[r]; var latestProg = getProg(latestRes.progId);
                 
