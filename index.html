@@ -486,13 +486,13 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
-        /* --- FEST GALLERY LOGIC (Plays every 10 mins, ONE SHOW ONLY) --- */
+        /* --- FEST GALLERY LOGIC (Plays every 2 mins, ONE SHOW ONLY) --- */
         var galleryItems = []; 
         var currentGalleryIndex = 0;
         var galleryActive = false;
         
-        // 10 minutes interval timer (600,000 ms)
-        var galleryTriggerInterval = setInterval(triggerGallery, 600000); 
+        // 2 minutes interval timer (120,000 ms)
+        var galleryTriggerInterval = setInterval(triggerGallery, 120000); 
 
         function triggerGallery() {
             if (!galleryItems || galleryItems.length === 0 || galleryActive) return;
@@ -572,9 +572,9 @@
                 container.innerHTML = ''; // Clean up DOM
                 galleryActive = false;
                 
-                // Reset the 10-minute timer for the next show
+                // Reset the 2-minute timer for the next show
                 clearInterval(galleryTriggerInterval);
-                galleryTriggerInterval = setInterval(triggerGallery, 600000);
+                galleryTriggerInterval = setInterval(triggerGallery, 120000);
             }, 1000);
         }
 
