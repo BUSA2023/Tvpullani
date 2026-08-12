@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>മെഹ്ഫിലെ നൂർ 2026 - TV Display</title>
+    <title>മെഹ്ഫിലെ നൂർ 2026 - TV Display (Optimized)</title>
     
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800&family=Outfit:wght@400;800;900&display=swap" rel="stylesheet">
@@ -16,15 +16,19 @@
     
     <style>
         /* ========================================================
-           TV OPTIMIZED CSS (16:9 Aspect Ratio Focus using vh/vw)
+           TV OPTIMIZED CSS (High Performance, Low Memory)
            ======================================================== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: 'Anek Malayalam', sans-serif; 
+            background: #020617; /* Solid fallback */
             background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
             color: #ffffff; 
-            overflow: hidden; /* STRICTLY NO SCROLLING ON TV */
+            overflow: hidden; /* STRICTLY NO SCROLLING */
             height: 100vh; width: 100vw;
+            /* Force Hardware Acceleration */
+            transform: translateZ(0); 
+            backface-visibility: hidden;
         }
         .num-font { font-family: 'Outfit', sans-serif; }
 
@@ -35,6 +39,7 @@
         }
         .orb {
             position: absolute; border-radius: 50%;
+            will-change: opacity; /* Optimizes RAM/GPU usage */
             animation: pulseOrb infinite ease-in-out;
         }
         @keyframes pulseOrb {
@@ -46,26 +51,25 @@
         /* OVERLAYS */
         #start-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.95); z-index: 9999;
+            background: #020617; z-index: 9999;
             display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer;
         }
         .start-btn { background: #ec4899; color: white; padding: 3vh 4vw; font-size: 4vh; font-weight: bold; border-radius: 2vh; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 3vh rgba(236,72,153,0.5); transition: 0.3s;}
         .start-btn:hover { transform: scale(1.05); }
 
-        /* MAIN VIEW CONTAINER (TV Safe Area Padding) */
+        /* MAIN VIEW CONTAINER */
         .view-container {
             position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             display: none; flex-direction: column;
-            padding: 4vh 4vw; /* Protects from TV Overscan */
-            animation: fadeIn 0.8s ease-in-out; 
+            padding: 4vh 4vw; 
+            animation: fadeIn 0.5s ease-out; 
             overflow: hidden;
         }
         .view-active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         /* HEADER & TITLE */
         .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
-        /* YOUR LOGO HEIGHT IS ADJUSTED HERE - Removed drop-shadow for performance */
         .fest-logo-img { height: 9vh; max-height: 80px; object-fit: contain; }
         
         .page-title { 
@@ -77,7 +81,6 @@
 
         /* --- PAGE 1: TOTAL SCORE --- */
         .dashboard-content { display: flex; justify-content: space-around; align-items: center; flex: 1; padding: 0 4vw; min-height: 0; }
-        /* Removed box-shadows for TV Performance */
         .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); }
         .team-name { font-size: 6vh; font-weight: bold; margin-bottom: 1vh; }
         .team-name.team-a { color: #fb7185; }
@@ -87,15 +90,9 @@
         .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; }
 
         .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
-        .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; }
         .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; }
         .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
-        
-        /* Animated Stage Name CSS */
-        .stage-anim-container { height: 5vh; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .stage-name { position: absolute; font-size: 3.5vh; color: #fbbf24; font-weight: bold; opacity: 0; transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out; transform: translateY(2vh); white-space: nowrap;}
-        .stage-name.active { opacity: 1; transform: translateY(0); }
-        .stage-name.exit { opacity: 0; transform: translateY(-2vh); }
 
         /* --- PAGE 2: LATEST RESULTS --- */
         .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; }
@@ -108,9 +105,6 @@
         .res-card.newest .rc-name { font-size: 3.5vh; }
         .res-card.newest .rc-team { font-size: 2vh; padding: 0.5vh 1vw; }
 
-        .corner-ribbon { width: 15vh; height: 15vh; overflow: hidden; position: absolute; top: 0; right: 0; z-index: 10; border-radius: 0 2vh 0 0; pointer-events: none; }
-        .corner-ribbon::before { content: '✨ LATEST'; position: absolute; display: block; width: 22vh; padding: 1vh 0; background: linear-gradient(90deg, #fbbf24, #f59e0b); box-shadow: 0 1vh 2vh rgba(0,0,0,0.4); color: #78350f; font-weight: 900; font-size: 1.5vh; text-align: center; right: -5vh; top: 3vh; transform: rotate(45deg); letter-spacing: 0.2vw; }
-
         .rc-title { font-weight: bold; color: #fff; border-bottom: 0.1vh solid rgba(255,255,255,0.1); padding-bottom: 1vh; margin-bottom: 1.5vh; display: flex; justify-content: space-between; align-items: center;}
         .rc-title-text { display: flex; flex-direction: column; }
         .rc-title-text span { font-size: 2.8vh; }
@@ -118,12 +112,8 @@
         
         .rc-cat { font-size: 1.5vh; background: #1e293b; padding: 0.5vh 1vw; border-radius: 1vh; color: #94a3b8; font-weight: bold; text-transform: uppercase;}
         .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 1vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; }
-        .rc-row.first { border-left: 0.6vh solid #fbbf24; }
-        .rc-row.second { border-left: 0.6vh solid #cbd5e1; }
-        .rc-row.third { border-left: 0.6vh solid #b45309; }
         .rc-name { font-size: 2.5vh; font-weight: bold; color: #f1f5f9; }
         .rc-team { font-size: 1.5vh; font-weight: bold; padding: 0.5vh 1vw; border-radius: 0.8vh; background: rgba(255,255,255,0.1); }
-        .rc-team.a { color: #fb7185; } .rc-team.b { color: #818cf8; }
 
         /* --- PAGE 3: CATEGORY SCORES --- */
         .category-container { display: flex; justify-content: space-between; gap: 3vw; flex: 1; align-items: center; min-height: 0;}
@@ -134,30 +124,27 @@
         .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
         .cat-pts { font-size: 5vh; font-weight: 900; color: #fff; }
 
-        /* --- POINT TABLES (TV Optimized - FORCE FIT) --- */
+        /* --- POINT TABLES (TV Optimized) --- */
         .table-container { 
             background: rgba(15, 23, 42, 0.8); border-radius: 2vh; padding: 1vh; 
             border: 0.1vh solid rgba(255,255,255,0.1); 
-            flex: 1; display: flex; flex-direction: column; overflow: hidden; /* No scroll */
+            flex: 1; display: flex; flex-direction: column; overflow: hidden;
         }
         .pt-header-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.8); border-radius: 1vh 1vh 0 0; flex-shrink: 0; }
         
         .no-scroll-wrapper { 
             flex: 1; background: rgba(0,0,0,0.4); border-radius: 0 0 1vh 1vh; 
-            overflow: hidden; /* FORCE TV FIT */
+            overflow: hidden; 
             display: flex; flex-direction: column;
         }
         
         .pt-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
-        
-        /* Trick to evenly distribute row height and shrink if needed */
         .pt-table tbody tr { height: 1%; } 
 
         th, td { text-align: center; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
         .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; border-bottom: 0.2vh solid #334155; padding: 1vh;}
         
-        .pt-table td { padding: 0.2vh 1vw; font-size: 2.2vh; font-weight: bold; } /* Super tight padding for TV fitting */
-        
+        .pt-table td { padding: 0.2vh 1vw; font-size: 2.2vh; font-weight: bold; } 
         .t-left { text-align: left !important; padding-left: 2vw !important; vertical-align: middle;}
         
         .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; overflow: hidden; }
@@ -165,52 +152,37 @@
         .p-name-eng { font-size: 1.4vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; }
         
         .s-tag { font-size: 1.2vh; background: #334155; padding: 0.4vh 0.6vw; border-radius: 0.5vh; color: #cbd5e1; margin-left: 1vw; font-weight: bold; text-transform: uppercase; flex-shrink: 0;}
-        .s-grp { background: #78350f; color: #fcd34d; }
-        .s-gen { background: #064e3b; color: #34d399; }
-        
         .pt-team-a { color: #fb7185; font-size: 2.5vh !important; } 
         .pt-team-b { color: #818cf8; font-size: 2.5vh !important; }
-        .br-left { border-left: 0.2vh solid #334155; }
 
         /* TOAST */
-        #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000; box-shadow: 0 1vh 3vh rgba(0,0,0,0.5); }
+        #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s ease-out; z-index: 10000; box-shadow: 0 1vh 3vh rgba(0,0,0,0.5); }
         #toast.show { transform: translateY(0); }
 
-        /* --- FULL SCREEN GALLERY OVERLAY (ONE-TIME PLAY) --- */
+        /* --- HIGH PERFORMANCE GALLERY --- */
         #gallery-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: #000; z-index: 9500; display: none; opacity: 0;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 0.5s ease-in-out;
         }
         
-        /* Video wrapper for perfect letterboxing and visibility */
-        .gallery-media-wrapper {
+        /* The container where elements are injected and destroyed dynamically */
+        #gallery-media-container {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 1s ease-in-out; z-index: 1;
-            background-color: black;
         }
-        .gallery-media-wrapper.active { opacity: 1; z-index: 10; }
         
         .gallery-media {
-            width: 100vw; height: 100vh; object-fit: contain; /* Perfect scaling for portrait/landscape */
+            max-width: 100vw; max-height: 100vh; object-fit: contain;
             background-color: #000;
-            display: block;
         }
         
         .gallery-badge {
             position: absolute; bottom: 6vh; right: 4vw;
             background: rgba(0,0,0,0.8); color: #fff; padding: 2vh 3vw;
             border-radius: 2vh; font-size: 3vh; font-weight: bold;
-            border: 0.2vh solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            display: flex; align-items: center; gap: 2vw; z-index: 100;
-        }
-        
-        /* Mobile specific fallback */
-        @media (max-width: 1024px) {
-            .p-name-txt { font-size: 1.8vh; max-width: 25vw; }
-            .pt-table td { font-size: 1.8vh; padding: 0.5vh; }
-            .s-tag { font-size: 1vh; padding: 0.2vh 0.4vw; }
+            border: 0.2vh solid rgba(255,255,255,0.1); z-index: 100;
+            display: flex; align-items: center; gap: 2vw;
         }
     </style>
 </head>
@@ -222,20 +194,21 @@
 
     <div class="zero-gravity-bg" id="zg-bg"></div>
 
-    <!-- START SCREEN (Requires 1 click to enable Audio & Fullscreen on TV) -->
+    <!-- START SCREEN -->
     <div id="start-overlay" onclick="startApp()">
         <button class="start-btn">Start Live TV Display</button>
-        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക<br>(തുടങ്ങുമ്പോൾ തനിയെ Full-screen ആകും)</p>
-        <p style="margin-top:2vh; font-size:2vh; color:#fb7185; text-align:center; padding:0 4vw; font-weight:bold;">ശ്രദ്ധിക്കുക: ടിവി തനിയെ ഓഫ് ആവാതിരിക്കാൻ Settings ൽ പോയി 'Auto Power Off' അല്ലെങ്കിൽ 'Sleep Timer' OFF ചെയ്യുക.</p>
+        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക</p>
+        <p style="margin-top:2vh; font-size:2vh; color:#fb7185; text-align:center; font-weight:bold;">ടിവി തനിയെ ഓഫ് ആവാതിരിക്കാൻ Settings ൽ പോയി 'Auto Power Off' OFF ചെയ്യുക.</p>
     </div>
 
-    <!-- FEST GALLERY OVERLAY (2-min interval, One show only) -->
+    <!-- HIGH-PERFORMANCE FEST GALLERY -->
     <div id="gallery-overlay">
+        <!-- Media is injected here and DESTROYED when done to save RAM -->
         <div id="gallery-media-container"></div>
         <div class="gallery-badge">
             <span style="font-size:4vh;">📸</span> 
             <div>
-                <div style="font-size: 1.5vh; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.2vw;">Fest Gallery</div>
+                <div style="font-size: 1.5vh; color: #fbbf24; text-transform: uppercase;">Fest Gallery</div>
                 <div style="font-size: 2.5vh; line-height: 1;">മെഹ്ഫിലെ നൂർ 2026</div>
             </div>
         </div>
@@ -244,14 +217,10 @@
     <div id="toast">പുതിയ അപ്ഡേറ്റ്!</div>
 
     <div id="app" style="display:none; width: 100%; height: 100%; position: relative;">
-        
         <!-- PAGE 1: SCORE & STATS -->
         <div id="view-1" class="view-container view-active">
-            <div class="header">
-                <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
-            </div>
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">ടീം പോയിന്റുകൾ (TOTAL SCORE)</div>
-            
             <div class="dashboard-content">
                 <div class="team-block">
                     <div class="team-name team-a" id="name-teamA-1">Team A</div>
@@ -263,13 +232,12 @@
                     <div class="huge-points num-font" id="score-teamB">0</div>
                 </div>
             </div>
-
             <div class="stats-row">
                 <div class="stat-box"><div class="stat-value num-font" id="stat-programs">0</div><div class="stat-label">മത്സരങ്ങൾ</div></div>
                 <div class="stat-box"><div class="stat-value num-font" id="stat-candidates">0</div><div class="stat-label">കുട്ടികൾ</div></div>
                 <div class="stat-box"><div class="stat-value num-font" id="stat-teams">2</div><div class="stat-label">ടീമുകൾ</div></div>
                 <div class="stat-box">
-                    <div style="font-size: 2.5vh; color: #fbbf24; font-weight: bold; line-height: 1.2; margin-bottom: 0.5vh;">മദ്രസ ഹാൾ /<br>ആലിക്കുട്ടി ഉസ്താദ് നഗർ</div>
+                    <div style="font-size: 2.5vh; color: #fbbf24; font-weight: bold; line-height: 1.2;">മദ്രസ ഹാൾ</div>
                     <div class="stat-label">വേദി</div>
                 </div>
             </div>
@@ -277,19 +245,15 @@
 
         <!-- PAGE 2: LATEST RESULTS -->
         <div id="view-2" class="view-container">
-            <div class="header">
-                <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
-            </div>
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">ഏറ്റവും പുതിയ ഫലങ്ങൾ (LATEST RESULTS)</div>
             <div class="results-grid" id="results-grid-container"></div>
         </div>
 
         <!-- PAGE 3: CATEGORY SCORES -->
         <div id="view-3" class="view-container">
-            <div class="header">
-                <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
-            </div>
-            <div class="page-title">വിഭാഗം തിരിച്ചുള്ള പോയിന്റുകൾ (CATEGORY SCORES)</div>
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
+            <div class="page-title">വിഭാഗം തിരിച്ചുള്ള പോയിന്റുകൾ</div>
             <div class="category-container">
                 <div class="cat-box">
                     <div class="cat-title">ജൂനിയർ (Junior)</div>
@@ -311,21 +275,18 @@
 
         <!-- PAGE 4: JUNIOR TABLE -->
         <div id="view-4" class="view-container">
-            <div class="header">
-                <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
-            </div>
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">പോയിന്റ് ടേബിൾ - ജൂനിയർ (JUNIOR)</div>
             <div class="table-container">
                 <table class="pt-header-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 28%; vertical-align: middle;">മത്സരം (Program)</th>
+                            <th rowspan="2" class="t-left" style="width: 28%;">മത്സരം (Program)</th>
                             <th colspan="3" class="pt-team-a" style="width: 36%;" id="th-teamA-4">Team A</th>
-                            <th colspan="3" class="pt-team-b br-left" style="width: 36%;" id="th-teamB-4">Team B</th>
+                            <th colspan="3" class="pt-team-b" style="width: 36%; border-left:0.2vh solid #334155;" id="th-teamB-4">Team B</th>
                         </tr>
                         <tr>
-                            <th style="width: 12%;">🥇 1st</th><th style="width: 12%;">🥈 2nd</th><th style="width: 12%;">🥉 3rd</th>
-                            <th class="br-left" style="width: 12%;">🥇 1st</th><th style="width: 12%;">🥈 2nd</th><th style="width: 12%;">🥉 3rd</th>
+                            <th>🥇</th><th>🥈</th><th>🥉</th><th style="border-left:0.2vh solid #334155;">🥇</th><th>🥈</th><th>🥉</th>
                         </tr>
                     </thead>
                 </table>
@@ -335,21 +296,18 @@
 
         <!-- PAGE 5: SENIOR + GENERAL (STAGE) -->
         <div id="view-5" class="view-container">
-            <div class="header">
-                <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
-            </div>
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (STAGE)</div>
             <div class="table-container">
                 <table class="pt-header-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 28%; vertical-align: middle;">മത്സരം (Program)</th>
+                            <th rowspan="2" class="t-left" style="width: 28%;">മത്സരം (Program)</th>
                             <th colspan="3" class="pt-team-a" style="width: 36%;" id="th-teamA-5">Team A</th>
-                            <th colspan="3" class="pt-team-b br-left" style="width: 36%;" id="th-teamB-5">Team B</th>
+                            <th colspan="3" class="pt-team-b" style="width: 36%; border-left:0.2vh solid #334155;" id="th-teamB-5">Team B</th>
                         </tr>
                         <tr>
-                            <th style="width: 12%;">🥇 1st</th><th style="width: 12%;">🥈 2nd</th><th style="width: 12%;">🥉 3rd</th>
-                            <th class="br-left" style="width: 12%;">🥇 1st</th><th style="width: 12%;">🥈 2nd</th><th style="width: 12%;">🥉 3rd</th>
+                            <th>🥇</th><th>🥈</th><th>🥉</th><th style="border-left:0.2vh solid #334155;">🥇</th><th>🥈</th><th>🥉</th>
                         </tr>
                     </thead>
                 </table>
@@ -359,262 +317,106 @@
 
         <!-- PAGE 6: SENIOR + GENERAL (NON-STAGE) -->
         <div id="view-6" class="view-container">
-            <div class="header">
-                <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
-            </div>
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (NON-STAGE)</div>
             <div class="table-container">
                 <table class="pt-header-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 28%; vertical-align: middle;">മത്സരം (Program)</th>
+                            <th rowspan="2" class="t-left" style="width: 28%;">മത്സരം (Program)</th>
                             <th colspan="3" class="pt-team-a" style="width: 36%;" id="th-teamA-6">Team A</th>
-                            <th colspan="3" class="pt-team-b br-left" style="width: 36%;" id="th-teamB-6">Team B</th>
+                            <th colspan="3" class="pt-team-b" style="width: 36%; border-left:0.2vh solid #334155;" id="th-teamB-6">Team B</th>
                         </tr>
                         <tr>
-                            <th style="width: 12%;">🥇 1st</th><th style="width: 12%;">🥈 2nd</th><th style="width: 12%;">🥉 3rd</th>
-                            <th class="br-left" style="width: 12%;">🥇 1st</th><th style="width: 12%;">🥈 2nd</th><th style="width: 12%;">🥉 3rd</th>
+                            <th>🥇</th><th>🥈</th><th>🥉</th><th style="border-left:0.2vh solid #334155;">🥇</th><th>🥈</th><th>🥉</th>
                         </tr>
                     </thead>
                 </table>
                 <div class="no-scroll-wrapper"><table class="pt-table"><tbody id="table-body-senior-nonstage"></tbody></table></div>
             </div>
         </div>
-
     </div>
 
     <script>
         var appStarted = false;
-        var tvWakeLockAudio = null; // Global reference for continuous background media
 
-        // Zero Gravity Background Generator (TV Optimized)
+        // Optimized Background (Reduced items for RAM)
         function createZeroGravity() {
             var bg = document.getElementById('zg-bg');
             var colors = ['#ec4899', '#8b5cf6', '#fbbf24', '#34d399', '#fb7185'];
-            // Reduced to 10 items for better TV performance
-            for(var i=0; i<10; i++) {
+            for(var i=0; i<6; i++) { // Max 6 items for TV performance
                 var orb = document.createElement('div');
                 orb.className = 'orb';
-                var size = Math.random() * 15 + 5; 
-                orb.style.width = size + 'vh';
-                orb.style.height = size + 'vh';
-                orb.style.left = Math.random() * 90 + 'vw';
-                orb.style.top = Math.random() * 80 + 'vh'; // Static positions
-                
-                var color = colors[Math.floor(Math.random() * colors.length)];
-                
-                orb.style.backgroundColor = color;
-                
-                orb.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Pulse speed
-                orb.style.animationDelay = (Math.random() * 5) + 's';
-                
+                var size = Math.random() * 10 + 5; 
+                orb.style.width = size + 'vh'; orb.style.height = size + 'vh';
+                orb.style.left = Math.random() * 90 + 'vw'; orb.style.top = Math.random() * 80 + 'vh';
+                orb.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                orb.style.animationDuration = (Math.random() * 5 + 5) + 's';
                 bg.appendChild(orb);
             }
         }
         createZeroGravity();
-        
-        // ULTIMATE TV WAKE LOCK (Canvas Video Stream Hack)
-        // Fools the TV OS into thinking a live movie is playing, preventing Eco-Standby
-        function setupUltimateTVWakeLock() {
-            try {
-                // 1. Create a hidden canvas (Must be inside viewport for TVs to not pause it)
-                var canvas = document.createElement('canvas');
-                canvas.width = 10; canvas.height = 10;
-                canvas.style.position = 'fixed';
-                canvas.style.top = '0px'; 
-                canvas.style.left = '0px';
-                canvas.style.opacity = '0.01';
-                canvas.style.pointerEvents = 'none';
-                canvas.style.zIndex = '1';
-                document.body.appendChild(canvas);
-                var ctx = canvas.getContext('2d');
-                
-                // 2. Draw a continuously changing pixel to prevent static frame detection by TV AI
-                setInterval(function() {
-                    ctx.fillStyle = Math.random() > 0.5 ? '#020617' : '#000000';
-                    ctx.fillRect(0,0,10,10);
-                }, 5000); // Slowed down from 1s to 5s for performance
 
-                // 3. Convert the canvas into a 1FPS live video stream
-                if (canvas.captureStream) {
-                    var stream = canvas.captureStream(1); 
-                    var wakeVideo = document.createElement('video');
-                    wakeVideo.id = 'wake-video-elem'; // Added ID to track it
-                    wakeVideo.srcObject = stream;
-                    wakeVideo.setAttribute('playsinline', '');
-                    wakeVideo.setAttribute('muted', '');
-                    wakeVideo.autoplay = true;
-                    wakeVideo.muted = true;
-                    wakeVideo.loop = true;
-                    
-                    // Keep it in the DOM, inside the viewport, but totally invisible to the audience
-                    wakeVideo.style.position = 'fixed';
-                    wakeVideo.style.top = '0px';
-                    wakeVideo.style.left = '0px';
-                    wakeVideo.style.width = '10px';
-                    wakeVideo.style.height = '10px';
-                    wakeVideo.style.opacity = '0.01';
-                    wakeVideo.style.zIndex = '1';
-                    wakeVideo.style.pointerEvents = 'none';
-                    document.body.appendChild(wakeVideo);
-                    
-                    var playProm = wakeVideo.play();
-                    if(playProm !== undefined) playProm.catch(function(e){});
-                }
-
-                // 4. Samsung Tizen specific persistent lock (Re-requests every 1 minute)
-                if (typeof tizen !== 'undefined' && tizen.power) {
-                    setInterval(function() {
-                        try { tizen.power.request('SCREEN', 'SCREEN_NORMAL'); } catch(e){}
-                    }, 60000); 
-                }
-            } catch(e) {}
-        }
-
-        // Anti-Sleep Hack for TV
+        // Native, Lightweight WakeLock (NO Canvas/Video hacks)
         var wakeLockObj = null;
         async function preventSleep() {
             try {
                 if ('wakeLock' in navigator) { 
-                    if(wakeLockObj !== null) { 
-                        await wakeLockObj.release().catch(function(){}); 
-                    }
                     wakeLockObj = await navigator.wakeLock.request('screen');
                 }
-            } catch(e) {
-                // Silently ignore NotAllowedError in sandboxed environments
-            }
-            
+            } catch(e) {}
             try {
-                // Samsung Tizen TV support
                 if (typeof tizen !== 'undefined' && tizen.power) {
                     tizen.power.request('SCREEN', 'SCREEN_NORMAL');
                 }
             } catch(e) {}
         }
+        
+        setInterval(function() { if (appStarted) preventSleep(); }, 60000); // Check once a minute
 
-        // Re-request wake lock periodically to prevent TV sleep
-        setInterval(function() {
-            if (appStarted) {
-                preventSleep();
-                
-                // Aggressively attempt to keep background media playing
-                try {
-                    if (tvWakeLockAudio && tvWakeLockAudio.paused) {
-                        tvWakeLockAudio.play().catch(function(e){});
-                    }
-                    var wv = document.getElementById('wake-video-elem');
-                    if (wv && wv.paused) wv.play().catch(function(e){});
-                } catch(e) {}
-
-                // Simulate phantom user interaction to trick TV OS into staying awake
-                try { document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true })); } catch(e){}
-                try { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); } catch(e){}
-                
-                // TV OS Hack: Change URL history silently to simulate web navigation activity
-                try { history.replaceState(null, null, '#active=' + Date.now()); } catch(e){}
-            }
-        }, 15000); // Increased frequency to 15 seconds
-
-        document.addEventListener('visibilitychange', function() {
-            if (document.visibilityState === 'visible' && appStarted) preventSleep();
-        });
-
-        // Helper for Audio Unlocking
-        function unlockAudio(audioElem) {
-            if(!audioElem) return;
-            audioElem.muted = true;
-            var playPromise = audioElem.play();
-            if (playPromise !== undefined && typeof playPromise.then === 'function') {
-                playPromise.then(function() {
-                    audioElem.pause(); audioElem.currentTime = 0; audioElem.muted = false;
-                }).catch(function(err) {});
-            } else {
-                audioElem.pause(); audioElem.currentTime = 0; audioElem.muted = false;
-            }
-        }
-
-        // FULL SCREEN API (Triggers on 'Start' button click)
         function toggleFullScreen() {
             try {
                 var elem = document.documentElement;
-                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-                    if (elem.requestFullscreen) { 
-                        elem.requestFullscreen().catch(function(e){ console.log("Fullscreen error:", e); }); 
-                    }
-                    else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); } // Safari
-                    else if (elem.msRequestFullscreen) { elem.msRequestFullscreen(); } // IE11
-                }
-            } catch (e) {
-                console.log("Fullscreen not supported or blocked.");
-            }
+                if (elem.requestFullscreen) { elem.requestFullscreen().catch(function(){}); }
+                else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+            } catch (e) {}
         }
 
         function startApp() {
             preventSleep();
-            setupUltimateTVWakeLock(); // Launch the extreme TV wake lock video stream
-            toggleFullScreen(); // Go Full Screen
+            toggleFullScreen();
             
             document.getElementById('start-overlay').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             
-            unlockAudio(document.getElementById('sound-score'));
-            unlockAudio(document.getElementById('sound-result'));
-            
-            // AGGRESSIVE TV ANTI-SLEEP: Loop a silent clone of an audio file indefinitely
-            // This is the most reliable way to prevent Smart TVs from suspending the browser
-            try {
-                tvWakeLockAudio = document.getElementById('sound-score').cloneNode();
-                tvWakeLockAudio.loop = true;
-                tvWakeLockAudio.muted = true; // MUST be muted
-                tvWakeLockAudio.volume = 0;
-                tvWakeLockAudio.play().catch(function(e){});
-            } catch(e) {}
-
-            // NEW: ULTIMATE ANDROID TV WEBVIEW WAKE LOCK (Forced DOM Mutation)
-            // Forces Android TVs to keep the processor awake by simulating active text changes
-            try {
-                var domWakeLock = document.createElement('div');
-                domWakeLock.style.position = 'fixed';
-                domWakeLock.style.top = '-9999px'; // Completely off-screen
-                domWakeLock.style.opacity = '0.01';
-                document.body.appendChild(domWakeLock);
-                setInterval(function(){
-                    domWakeLock.innerText = "Active: " + Date.now();
-                }, 5000); // Slowed down from 1s to 5s for performance
-            } catch(e) {}
+            // Prime Audio
+            var a1 = document.getElementById('sound-score');
+            var a2 = document.getElementById('sound-result');
+            if(a1) { a1.muted=true; a1.play().then(function(){a1.pause();a1.muted=false;}).catch(function(){}); }
+            if(a2) { a2.muted=true; a2.play().then(function(){a2.pause();a2.muted=false;}).catch(function(){}); }
 
             appStarted = true; 
-            renderAll();
+            scheduleRender();
         }
 
         function playSound(type) {
             if (!appStarted) return;
             try { 
                 var audio = document.getElementById(type === 'score' ? 'sound-score' : 'sound-result'); 
-                if (audio) {
-                    audio.pause(); audio.currentTime = 0; audio.volume = 1; audio.muted = false;
-                    var playPromise = audio.play();
-                    if (playPromise !== undefined) playPromise.catch(function(e) {});
-                }
+                if (audio) { audio.currentTime = 0; audio.play().catch(function(){}); }
             } catch(e) {}
         }
         
+        // Highly Optimized Confetti (1 Single Burst, less particles)
         function triggerEpicReveal() {
             playSound('result');
-            
             try {
-                var duration = 1.5 * 1000; var end = Date.now() + duration;
-                (function frame() {
-                    confetti({ particleCount: 2, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] });
-                    confetti({ particleCount: 2, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] });
-                    if (Date.now() < end) { requestAnimationFrame(frame); }
-                }());
+                confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] });
             } catch(e) {}
 
             showToast("🔥 പുതിയ റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു! 🔥");
             
-            currentViewIndex = 2; // Jump to Results view
+            currentViewIndex = 2; 
             for(var i=1; i<=6; i++) document.getElementById('view-' + i).className = 'view-container';
             document.getElementById('view-2').className = 'view-container view-active';
         }
@@ -624,183 +426,93 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
-        /* --- DOM CACHED FEST GALLERY LOGIC (Plays every 4 mins, One show only) --- */
+        /* --- RAM-OPTIMIZED GALLERY LOGIC --- */
         var galleryItems = []; 
         var currentGalleryIndex = 0;
         var galleryActive = false;
-        var galleryDOMGenerated = false; // Flag to check if we already created the elements
-        
         var galleryTimer = null;
 
         function scheduleNextGallery() {
             if(galleryTimer) clearTimeout(galleryTimer);
-            galleryTimer = setTimeout(triggerGallery, 240000); // Wait exactly 4 minutes between shows
+            galleryTimer = setTimeout(triggerGallery, 240000); // 4 minutes
         }
-        
-        scheduleNextGallery(); // Start the cycle
-
-        // Generate DOM elements only ONCE and keep them cached for instant playback
-        function buildGalleryDOM() {
-            if (!galleryItems || galleryItems.length === 0) return;
-            
-            var container = document.getElementById('gallery-media-container');
-            container.innerHTML = ''; // Clear existing
-            
-            galleryItems.forEach(function(item, index) {
-                var wrapper = document.createElement('div');
-                wrapper.className = 'gallery-media-wrapper';
-                wrapper.id = 'g-wrapper-' + index;
-
-                var el;
-                if(item.type === 'video') {
-                    el = document.createElement('video');
-                    el.src = item.url; 
-                    el.muted = false; // Sound enabled
-                    el.playsInline = true;
-                    el.setAttribute('playsinline', ''); // Essential for Smart TVs
-                    el.loop = false; // STRICTLY no loop
-                    el.preload = 'auto'; // Download in background
-                } else {
-                    el = document.createElement('img');
-                    el.src = item.url;
-                }
-                
-                el.className = 'gallery-media';
-                // Inline styles to guarantee TVs respect dimensions natively
-                // FIXED: Using max-width and auto height ensures portrait videos maintain aspect ratio!
-                el.style.maxWidth = '100vw';
-                el.style.maxHeight = '100vh';
-                el.style.width = 'auto';
-                el.style.height = 'auto';
-                el.style.objectFit = 'contain';
-                el.style.backgroundColor = '#000';
-                
-                el.id = 'g-media-' + index;
-                
-                wrapper.appendChild(el);
-                container.appendChild(wrapper);
-            });
-            
-            galleryDOMGenerated = true;
-        }
+        scheduleNextGallery();
 
         function triggerGallery() {
             if (!galleryItems || galleryItems.length === 0 || galleryActive) {
                 if(!galleryActive) scheduleNextGallery();
                 return;
             }
-            
             galleryActive = true;
-            if(galleryTimer) clearTimeout(galleryTimer); // Pause the 4-min countdown while playing
+            if(galleryTimer) clearTimeout(galleryTimer);
             
-            // Build DOM if not built yet (or if new items arrived)
-            if(!galleryDOMGenerated) {
-                buildGalleryDOM();
-            }
-
             document.getElementById('gallery-overlay').style.display = 'block';
-            setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 100);
+            setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 50);
 
             currentGalleryIndex = 0;
-            playNextGalleryItem(); // Starts the one-time show
+            playNextGalleryItem(); 
         }
 
+        // CRUCIAL TV OPTIMIZATION: Create media element just-in-time, then permanently destroy it.
         function playNextGalleryItem() {
-            // Check if end of list (One full show completed)
+            var container = document.getElementById('gallery-media-container');
+            container.innerHTML = ''; // Force garbage collection of previous video RAM
+
             if(currentGalleryIndex >= galleryItems.length) {
                 endGalleryShow();
                 return;
             }
 
             var item = galleryItems[currentGalleryIndex];
-            var wrapper = document.getElementById('g-wrapper-' + currentGalleryIndex);
-            var mediaEl = document.getElementById('g-media-' + currentGalleryIndex);
-            
-            if(!wrapper || !mediaEl) {
-                // If element is missing for some reason, skip to next
-                currentGalleryIndex++;
-                playNextGalleryItem();
-                return;
-            }
-            
-            // Hide all media and pause any playing videos
-            var allWrappers = document.querySelectorAll('.gallery-media-wrapper');
-            allWrappers.forEach(function(w) { w.classList.remove('active'); });
-            
-            var allMedia = document.querySelectorAll('.gallery-media');
-            allMedia.forEach(function(m) { 
-                if(m.tagName === 'VIDEO') { 
-                    m.pause(); 
-                    m.currentTime = 0; 
-                    m.loop = false; 
-                    m.onended = null; // Strictly clear old event handlers
-                    m.onerror = null; 
-                } 
-            });
-            
-            // Show current item
-            wrapper.classList.add('active');
+            var el;
 
             if(item.type === 'video') {
-                mediaEl.loop = false; // Guarantee no looping
-                mediaEl.currentTime = 0; // Reset video to start
+                el = document.createElement('video');
+                el.src = item.url; 
+                el.className = 'gallery-media';
+                el.playsInline = true;
+                el.setAttribute('playsinline', ''); 
+                el.preload = 'metadata'; // Saves huge amount of memory
                 
-                // Bind strictly once to prevent double-firings on weird TV browsers
-                mediaEl.onended = function() { 
-                    this.onended = null;
-                    playNextGalleryItem(); 
-                };
-                mediaEl.onerror = function() { 
-                    this.onerror = null;
-                    playNextGalleryItem(); 
-                };
+                el.onended = function() { playNextGalleryItem(); };
+                el.onerror = function() { playNextGalleryItem(); };
 
-                var playPromise = mediaEl.play();
+                container.appendChild(el);
+                
+                var playPromise = el.play();
                 if(playPromise !== undefined) {
-                    playPromise.catch(function(e) { 
-                        console.log("Video AutoPlay prevented unmuted. Trying muted...", e); 
-                        mediaEl.muted = true; // Fallback to muted for strict TVs
-                        var mutedPromise = mediaEl.play();
-                        if (mutedPromise !== undefined) {
-                            mutedPromise.catch(function(e2) {
-                                console.log("Video completely blocked by TV", e2);
-                                mediaEl.onended = null; // Clean up
-                                playNextGalleryItem(); // Skip if playback fails entirely
-                            });
-                        }
+                    playPromise.catch(function() { 
+                        el.muted = true; // Fallback for strict TVs
+                        var mPromise = el.play();
+                        if(mPromise) mPromise.catch(function(){ playNextGalleryItem(); });
                     });
                 }
-                currentGalleryIndex++;
-                return; // Exit function, wait for 'onended' event
+            } else {
+                el = document.createElement('img');
+                el.src = item.url;
+                el.className = 'gallery-media';
+                container.appendChild(el);
+                setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
             }
-
-            // If it's an image, wait for specified duration then go to next
             currentGalleryIndex++;
-            setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
         }
 
-        // Function to securely close gallery and resume TV tables
         function endGalleryShow() {
             document.getElementById('gallery-overlay').style.opacity = '0';
             setTimeout(function() { 
                 document.getElementById('gallery-overlay').style.display = 'none'; 
-                // Note: We DO NOT clear the DOM here anymore, so it loads instantly next time.
+                document.getElementById('gallery-media-container').innerHTML = ''; // Final Cleanup
                 galleryActive = false;
-                
-                // Schedule the next show exactly 4 minutes from NOW
                 scheduleNextGallery();
-            }, 1000);
+            }, 500);
         }
 
-        // MAIN TV CAROUSEL VIEW LOGIC (Plays every 15s)
+        // CAROUSEL LOGIC
         var currentViewIndex = 1;
-        var totalViews = 6;
-        
         setInterval(function() {
-            if(galleryActive) return; // Pause TV slide if gallery is currently playing
-            for(var i=1; i<=totalViews; i++) document.getElementById('view-' + i).className = 'view-container';
-            currentViewIndex++;
-            if(currentViewIndex > totalViews) currentViewIndex = 1;
+            if(galleryActive) return; 
+            for(var i=1; i<=6; i++) document.getElementById('view-' + i).className = 'view-container';
+            currentViewIndex = (currentViewIndex % 6) + 1;
             document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
         }, 15000); 
 
@@ -820,61 +532,54 @@
         var state = { teams: { teamA: { name: 'Team A' }, teamB: { name: 'Team B' } }, programs: [], candidates: [], results: [] };
         var prevScoreA = -1; var prevScoreB = -1; var prevTotalRes = -1;
 
-        function getProg(id) { for(var i=0; i<state.programs.length; i++) if(state.programs[i].id === id) return state.programs[i]; return null; }
-        function getCand(id) { for(var i=0; i<state.candidates.length; i++) if(state.candidates[i].id === id) return state.candidates[i]; return null; }
-        function getTeamName(tid) { return (state.teams && state.teams[tid]) ? state.teams[tid].name : '-'; }
-        
+        // DEBOUNCER: Prevents TV from freezing if 10 database changes happen in 1 second
+        var renderTimer = null;
+        function scheduleRender() {
+            if(renderTimer) clearTimeout(renderTimer);
+            renderTimer = setTimeout(renderAll, 500); // Wait 0.5s before redrawing
+        }
+
         auth.signInAnonymously().then(function() {
             db.collection('settings').doc('config_v4').onSnapshot(function(snap) {
                 if (snap.exists) { 
                     var d = snap.data(); 
                     if (d.teams) state.teams = d.teams; 
                     if (d.programs) state.programs = d.programs; 
-                    if (d.gallery) {
-                        // Re-build DOM only if gallery items length/content changed
-                        if(galleryItems.length !== d.gallery.length) {
-                            galleryItems = d.gallery;
-                            galleryDOMGenerated = false; // Force rebuild next time
-                        }
-                    }
-                    renderAll(); 
+                    if (d.gallery) galleryItems = d.gallery;
+                    scheduleRender(); 
                 }
             });
             db.collection('candidates').onSnapshot(function(snap) {
-                var arr = []; snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.candidates = arr; renderAll();
+                var arr = []; snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.candidates = arr; scheduleRender();
             });
             db.collection('results').onSnapshot(function(snap) {
-                var arr = []; snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.results = arr; renderAll();
+                var arr = []; snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.results = arr; scheduleRender();
             });
         });
+
+        // Data helpers
+        function getProg(id) { for(var i=0; i<state.programs.length; i++) if(state.programs[i].id === id) return state.programs[i]; return null; }
+        function getCand(id) { for(var i=0; i<state.candidates.length; i++) if(state.candidates[i].id === id) return state.candidates[i]; return null; }
+        function getTeamName(tid) { return (state.teams && state.teams[tid]) ? state.teams[tid].name : '-'; }
 
         function generateTableRows(programList) {
             var tbody = "";
             if (programList.length === 0) return "<tr><td colspan='7' style='color:#64748b;'>പ്രോഗ്രാമുകൾ ചേർത്തിട്ടില്ല</td></tr>";
-            
             for (var p = 0; p < programList.length; p++) {
                 var tProg = programList[p];
-                
-                // Split for English Name Support
                 var names = tProg.name.split('\n');
                 var mlName = names[0];
                 var enName = names.length > 1 ? "<span class='p-name-eng'>" + names[1] + "</span>" : "";
-
                 var tTag = "<span class='s-tag'>" + tProg.type + "</span>";
-                if(tProg.isGroup) tTag += "<span class='s-tag s-grp'>Group</span>";
-                if(tProg.cat === 'General') tTag += "<span class='s-tag s-gen'>Gen</span>";
-
+                
                 var tRes = null;
                 for(var j=0; j<state.results.length; j++) { if(state.results[j].progId === tProg.id) { tRes = state.results[j]; break; } }
 
                 var a1="-", a2="-", a3="-", b1="-", b2="-", b3="-";
-
                 if (tRes) {
                     var tF = tProg.isGroup ? 15 : 10; var tS = tProg.isGroup ? 10 : 5; var tT = tProg.isGroup ? 5 : 3;
-                    
                     var checkPts = function(ids, pts) {
-                        var arr = [];
-                        if(Array.isArray(ids)) { arr = ids; } else if(ids) { arr = [ids]; }
+                        var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
                         for(var k=0; k<arr.length; k++) {
                             var cand = getCand(arr[k]);
                             if(cand) {
@@ -893,23 +598,13 @@
                 var sB2 = b2 !== "-" ? "color:#cbd5e1; font-size:110%;" : "color:#334155;";
                 var sB3 = b3 !== "-" ? "color:#d97706; font-size:110%;" : "color:#334155;";
 
-                // Important: <tr> height set in CSS to 1% to force shrink-to-fit
                 tbody += "<tr>" +
-                    "<td class='t-left' style='width:28%;'><div class='prog-name-wrapper'><div class='p-name-txt' title='" + mlName + "'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
-                    "<td style='width:12%; " + sA1 + "'>" + a1 + "</td><td style='width:12%; " + sA2 + "'>" + a2 + "</td><td style='width:12%; " + sA3 + "'>" + a3 + "</td>" +
-                    "<td class='br-left' style='width:12%; " + sB1 + "'>" + b1 + "</td><td style='width:12%; " + sB2 + "'>" + b2 + "</td><td style='width:12%; " + sB3 + "'>" + b3 + "</td>" +
+                    "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt' title='" + mlName + "'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
+                    "<td style='" + sA1 + "'>" + a1 + "</td><td style='" + sA2 + "'>" + a2 + "</td><td style='" + sA3 + "'>" + a3 + "</td>" +
+                    "<td style='border-left:0.2vh solid #334155;" + sB1 + "'>" + b1 + "</td><td style='" + sB2 + "'>" + b2 + "</td><td style='" + sB3 + "'>" + b3 + "</td>" +
                     "</tr>";
             }
             return tbody;
-        }
-
-        function getCandNamesString(ids) {
-            var arr = []; if(Array.isArray(ids)) { arr = ids; } else if(ids) { arr = [ids]; } if(arr.length === 0) return '-';
-            var names = []; for(var i=0; i<arr.length; i++) { var c = getCand(arr[i]); names.push(c ? c.name : '-'); } return names.join(', ');
-        }
-        function getTeamNamesString(ids) {
-            var arr = []; if(Array.isArray(ids)) { arr = ids; } else if(ids) { arr = [ids]; } if(arr.length === 0) return '-';
-            var teams = []; for(var i=0; i<arr.length; i++) { var c = getCand(arr[i]); if(c) { var tName = getTeamName(c.team); if(teams.indexOf(tName) === -1) teams.push(tName); } } return teams.length > 0 ? teams.join(' & ') : '-';
         }
 
         function renderAll() {
@@ -922,7 +617,7 @@
                 var fPts = isGroup ? 15 : 10; var sPts = isGroup ? 10 : 5; var tPts = isGroup ? 5 : 3;
 
                 var addPts = function(ids, pts) {
-                    var arr = []; if(Array.isArray(ids)) { arr = ids; } else if(ids) { arr = [ids]; }
+                    var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
                     for(var k=0; k<arr.length; k++) { var c = getCand(arr[k]); if(c && stats[c.team]) { stats[c.team].total += pts; stats[c.team][cat.toLowerCase()] += pts; } }
                 };
                 addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
@@ -937,18 +632,11 @@
 
             document.getElementById('stat-programs').innerText = state.programs.length;
             document.getElementById('stat-candidates').innerText = state.candidates.length;
-            var teamCount = 0; for(var key in state.teams) { if(key !== 'admin') teamCount++; }
-            document.getElementById('stat-teams').innerText = teamCount;
+            document.getElementById('stat-teams').innerText = 2; // Hardcoded optimizations
 
             var taName = getTeamName('teamA'); var tbName = getTeamName('teamB');
-            
-            document.getElementById('name-teamA-1').innerText = taName; document.getElementById('name-teamB-1').innerText = tbName;
-            document.getElementById('name-teamA-2').innerText = taName; document.getElementById('name-teamB-2').innerText = tbName;
-            document.getElementById('name-teamA-3').innerText = taName; document.getElementById('name-teamB-3').innerText = tbName;
-            document.getElementById('name-teamA-4').innerText = taName; document.getElementById('name-teamB-4').innerText = tbName;
-            document.getElementById('th-teamA-4').innerText = taName; document.getElementById('th-teamB-4').innerText = tbName;
-            document.getElementById('th-teamA-5').innerText = taName; document.getElementById('th-teamB-5').innerText = tbName;
-            document.getElementById('th-teamA-6').innerText = taName; document.getElementById('th-teamB-6').innerText = tbName;
+            [1,2,3,4].forEach(n => { document.getElementById('name-teamA-'+n).innerText = taName; document.getElementById('name-teamB-'+n).innerText = tbName; });
+            [4,5,6].forEach(n => { document.getElementById('th-teamA-'+n).innerText = taName; document.getElementById('th-teamB-'+n).innerText = tbName; });
 
             document.getElementById('score-teamA').innerText = stats.teamA.total; document.getElementById('score-teamB').innerText = stats.teamB.total;
             document.getElementById('cat-j-a').innerText = stats.teamA.junior; document.getElementById('cat-j-b').innerText = stats.teamB.junior;
@@ -958,39 +646,39 @@
             var resHtml = "";
             if (sortedRes.length === 0) resHtml = "<h2 style='color:#64748b; grid-column:span 2; text-align:center;'>ഫലങ്ങൾ വന്നിട്ടില്ല...</h2>";
             
-            // TV Optimization: Show Max 5 Results
             for(var r=0; r<Math.min(sortedRes.length, 5); r++) {
                 var latestRes = sortedRes[r]; var latestProg = getProg(latestRes.progId);
-                
                 var pNames = latestProg ? latestProg.name.split('\n') : ['-']; 
-                var pName = pNames[0]; 
-                var pEngName = pNames.length > 1 ? "<span class='rc-title-eng'>" + pNames[1] + "</span>" : "";
+                
+                var c1 = Array.isArray(latestRes.first) ? latestRes.first : [latestRes.first];
+                var c2 = Array.isArray(latestRes.second) ? latestRes.second : [latestRes.second];
+                var c3 = Array.isArray(latestRes.third) ? latestRes.third : [latestRes.third];
 
-                var pCat = latestProg ? latestProg.cat : '';
-                var isNew = (r === 0) ? " newest" : "";
-                var ribbonHtml = isNew ? "<div class='corner-ribbon'></div>" : "";
-                var c1Names = getCandNamesString(latestRes.first); var c2Names = getCandNamesString(latestRes.second); var c3Names = getCandNamesString(latestRes.third);
-                var c1Teams = getTeamNamesString(latestRes.first); var c2Teams = getTeamNamesString(latestRes.second); var c3Teams = getTeamNamesString(latestRes.third);
+                var getC = (ids) => { var n=[]; ids.forEach(id=>{ var c=getCand(id); if(c)n.push(c.name); }); return n.length?n.join(', '):'-'; };
+                var getT = (ids) => { var t=[]; ids.forEach(id=>{ var c=getCand(id); if(c && t.indexOf(getTeamName(c.team))===-1)t.push(getTeamName(c.team)); }); return t.length?t.join(' & '):'-'; };
 
-                resHtml += "<div class='res-card" + isNew + "'>" + ribbonHtml + "<div class='rc-title'><div class='rc-title-text'><span>" + pName + "</span>" + pEngName + "</div> <span class='rc-cat'>" + pCat + "</span></div>";
-                if(c1Names !== '-') resHtml += "<div class='rc-row first'><span class='rc-name'>🥇 " + c1Names + "</span><span class='rc-team' style='color:#fbbf24'>" + c1Teams + "</span></div>";
-                if(c2Names !== '-') resHtml += "<div class='rc-row second'><span class='rc-name'>🥈 " + c2Names + "</span><span class='rc-team' style='color:#cbd5e1'>" + c2Teams + "</span></div>";
-                if(c3Names !== '-') resHtml += "<div class='rc-row third'><span class='rc-name'>🥉 " + c3Names + "</span><span class='rc-team' style='color:#b45309'>" + c3Teams + "</span></div>";
+                var c1N=getC(c1), c2N=getC(c2), c3N=getC(c3);
+                
+                resHtml += "<div class='res-card" + (r===0?" newest":"") + "'><div class='rc-title'><div class='rc-title-text'><span>" + pNames[0] + "</span></div> <span class='rc-cat'>" + (latestProg?latestProg.cat:'') + "</span></div>";
+                if(c1N!=='-') resHtml += "<div class='rc-row'><span class='rc-name'>🥇 " + c1N + "</span><span class='rc-team' style='color:#fbbf24'>" + getT(c1) + "</span></div>";
+                if(c2N!=='-') resHtml += "<div class='rc-row'><span class='rc-name'>🥈 " + c2N + "</span><span class='rc-team' style='color:#cbd5e1'>" + getT(c2) + "</span></div>";
+                if(c3N!=='-') resHtml += "<div class='rc-row'><span class='rc-name'>🥉 " + c3N + "</span><span class='rc-team' style='color:#b45309'>" + getT(c3) + "</span></div>";
                 resHtml += "</div>";
             }
             document.getElementById('results-grid-container').innerHTML = resHtml;
 
-            var juniorProgs = [], seniorStageProgs = [], seniorNonStageProgs = [];
-            for (var p = 0; p < state.programs.length; p++) {
-                var prg = state.programs[p];
-                if(prg.cat === 'Junior') { juniorProgs.push(prg); } 
-                else if(prg.cat === 'Senior' || prg.cat === 'General') { if (prg.type === 'Stage') { seniorStageProgs.push(prg); } else { seniorNonStageProgs.push(prg); } }
-            }
+            var jP=[], sP=[], nP=[];
+            state.programs.forEach(prg => {
+                if(prg.cat === 'Junior') jP.push(prg);
+                else if(prg.type === 'Stage') sP.push(prg);
+                else nP.push(prg);
+            });
 
-            document.getElementById('table-body-junior').innerHTML = generateTableRows(juniorProgs);
-            document.getElementById('table-body-senior-stage').innerHTML = generateTableRows(seniorStageProgs);
-            document.getElementById('table-body-senior-nonstage').innerHTML = generateTableRows(seniorNonStageProgs);
+            document.getElementById('table-body-junior').innerHTML = generateTableRows(jP);
+            document.getElementById('table-body-senior-stage').innerHTML = generateTableRows(sP);
+            document.getElementById('table-body-senior-nonstage').innerHTML = generateTableRows(nP);
         }
     </script>
 </body>
 </html>
+
