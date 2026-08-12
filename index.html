@@ -14,6 +14,9 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
+    <!-- NoSleep.js for TV Anti-Sleep -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nosleep/0.12.0/NoSleep.min.js"></script>
+    
     <style>
         /* ========================================================
            TV OPTIMIZED CSS (16:9 Aspect Ratio Focus using vh/vw)
@@ -90,9 +93,15 @@
         .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; box-shadow: inset 0 0 3vh rgba(0,0,0,0.5); }
 
         .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
-        .stat-box { background: rgba(15, 23, 42, 0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh 3vw; text-align: center; box-shadow: 0 1vh 3vh rgba(0,0,0,0.3); flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; }
+        .stat-box { background: rgba(15, 23, 42, 0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh 3vw; text-align: center; box-shadow: 0 1vh 3vh rgba(0,0,0,0.3); flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
         .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; text-shadow: 0 0 1.5vh rgba(52,211,153,0.3);}
         .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
+        
+        /* Animated Stage Name CSS */
+        .stage-anim-container { height: 5vh; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .stage-name { position: absolute; font-size: 3.5vh; color: #fbbf24; font-weight: bold; opacity: 0; transition: opacity 0.8s ease-in-out, transform 0.8s ease-in-out; transform: translateY(2vh); white-space: nowrap;}
+        .stage-name.active { opacity: 1; transform: translateY(0); }
+        .stage-name.exit { opacity: 0; transform: translateY(-2vh); }
 
         /* --- PAGE 2: LATEST RESULTS --- */
         .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; }
@@ -179,13 +188,21 @@
             background: #000; z-index: 9500; display: none; opacity: 0;
             transition: opacity 1s ease-in-out;
         }
-        .gallery-media {
-            width: 100%; height: 100%; object-fit: contain; /* Prevents cropping on TV */
-            position: absolute; top: 0; left: 0; opacity: 0;
-            transition: opacity 1s ease-in-out;
-            background: black; /* Black background for letterboxing */
+        
+        /* Video wrapper for perfect letterboxing and visibility */
+        .gallery-media-wrapper {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 1s ease-in-out; z-index: 1;
+            background-color: black;
         }
-        .gallery-media.active { opacity: 1; }
+        .gallery-media-wrapper.active { opacity: 1; z-index: 10; }
+        
+        .gallery-media {
+            max-width: 100%; max-height: 100%; object-fit: contain; /* Prevents cropping on TV */
+            display: block;
+        }
+        
         .gallery-badge {
             position: absolute; bottom: 6vh; right: 4vw;
             background: rgba(0,0,0,0.8); color: #fff; padding: 2vh 3vw;
@@ -193,6 +210,7 @@
             border: 0.2vh solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
             display: flex; align-items: center; gap: 2vw; z-index: 100;
         }
+        
         /* Mobile specific fallback */
         @media (max-width: 1024px) {
             .p-name-txt { font-size: 1.8vh; max-width: 25vw; }
@@ -216,7 +234,7 @@
         <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക<br>(തുടങ്ങുമ്പോൾ തനിയെ Full-screen ആകും)</p>
     </div>
 
-    <!-- FEST GALLERY OVERLAY (10-min interval, One show only) -->
+    <!-- FEST GALLERY OVERLAY (2-min interval, One show only) -->
     <div id="gallery-overlay">
         <div id="gallery-media-container"></div>
         <div class="gallery-badge">
@@ -235,7 +253,6 @@
         <!-- PAGE 1: SCORE & STATS -->
         <div id="view-1" class="view-container view-active">
             <div class="header">
-                <!-- SINGLE LOGO IMAGE -->
                 <img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026">
             </div>
             <div class="page-title">ടീം പോയിന്റുകൾ (TOTAL SCORE)</div>
@@ -256,7 +273,13 @@
                 <div class="stat-box"><div class="stat-value num-font" id="stat-programs">0</div><div class="stat-label">മത്സരങ്ങൾ</div></div>
                 <div class="stat-box"><div class="stat-value num-font" id="stat-candidates">0</div><div class="stat-label">കുട്ടികൾ</div></div>
                 <div class="stat-box"><div class="stat-value num-font" id="stat-teams">2</div><div class="stat-label">ടീമുകൾ</div></div>
-                <div class="stat-box"><div class="stat-value" style="font-size: 3.5vh; padding-top: 1vh; color: #fbbf24; font-weight: bold;">ഓറ ക്യാമ്പസ്</div><div class="stat-label">വേദി</div></div>
+                <div class="stat-box">
+                    <div class="stage-anim-container">
+                        <div class="stage-name active" id="stage-name-1">മദ്രസ ഹാൾ</div>
+                        <div class="stage-name" id="stage-name-2">ആലിക്കുട്ടി ഉസ്താദ് നഗർ</div>
+                    </div>
+                    <div class="stat-label">വേദി</div>
+                </div>
             </div>
         </div>
 
@@ -370,6 +393,29 @@
 
     <script>
         var appStarted = false;
+        var noSleep = new NoSleep(); // Initialize NoSleep.js for TV
+        var tvWakeLockAudio = null; // Global reference for continuous background media
+
+        // Stage Name Animation Logic
+        var currentStageIndex = 1;
+        setInterval(function() {
+            if(!appStarted) return;
+            var oldStage = document.getElementById('stage-name-' + currentStageIndex);
+            if(oldStage) {
+                oldStage.classList.remove('active');
+                oldStage.classList.add('exit');
+            }
+            
+            currentStageIndex = currentStageIndex === 1 ? 2 : 1;
+            
+            var newStage = document.getElementById('stage-name-' + currentStageIndex);
+            if(newStage) {
+                setTimeout(function() {
+                    if(oldStage) oldStage.classList.remove('exit');
+                    newStage.classList.add('active');
+                }, 800); // Wait for exit animation to finish
+            }
+        }, 5000); // Change stage name every 5 seconds
 
         // Zero Gravity Background Generator (TV Optimized)
         function createZeroGravity() {
@@ -395,13 +441,51 @@
         createZeroGravity();
         
         // Anti-Sleep Hack for TV
-        function preventSleep() {
+        var wakeLockObj = null;
+        async function preventSleep() {
             try {
                 if ('wakeLock' in navigator && typeof navigator.wakeLock.request === 'function') { 
-                    navigator.wakeLock.request('screen').catch(function(){}); 
+                    if(wakeLockObj !== null) { 
+                        var releasePromise = wakeLockObj.release();
+                        if(releasePromise && typeof releasePromise.catch === 'function') releasePromise.catch(function(){}); 
+                    }
+                    // Catch the rejection safely so it doesn't throw an unhandled error
+                    var reqPromise = navigator.wakeLock.request('screen');
+                    if(reqPromise && typeof reqPromise.catch === 'function') {
+                        wakeLockObj = await reqPromise.catch(function(err){ return null; });
+                    }
+                }
+            } catch(e) {}
+            
+            try {
+                // Samsung Tizen TV support
+                if (typeof tizen !== 'undefined' && tizen.power) {
+                    tizen.power.request('SCREEN', 'SCREEN_NORMAL');
                 }
             } catch(e) {}
         }
+
+        // Re-request wake lock periodically to prevent TV sleep
+        setInterval(function() {
+            if (appStarted) {
+                preventSleep();
+                
+                // Aggressively attempt to keep background media playing
+                try {
+                    if (tvWakeLockAudio && tvWakeLockAudio.paused) {
+                        tvWakeLockAudio.play().catch(function(e){});
+                    }
+                } catch(e) {}
+
+                // Simulate phantom user interaction to trick TV OS into staying awake
+                try { document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true })); } catch(e){}
+                try { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); } catch(e){}
+            }
+        }, 15000); // Increased frequency to 15 seconds
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible' && appStarted) preventSleep();
+        });
 
         // Helper for Audio Unlocking
         function unlockAudio(audioElem) {
@@ -434,6 +518,14 @@
         }
 
         function startApp() {
+            try {
+                // Enable NoSleep.js and explicitly catch the promise rejection if the browser blocks it
+                var nsPromise = noSleep.enable();
+                if (nsPromise && typeof nsPromise.catch === 'function') {
+                    nsPromise.catch(function(e) { console.log("WakeLock API blocked, relying on audio fallback."); });
+                }
+            } catch(e) {}
+            
             preventSleep();
             toggleFullScreen(); // Go Full Screen
             
@@ -443,6 +535,16 @@
             unlockAudio(document.getElementById('sound-score'));
             unlockAudio(document.getElementById('sound-result'));
             
+            // AGGRESSIVE TV ANTI-SLEEP: Loop a silent clone of an audio file indefinitely
+            // This is the most reliable way to prevent Smart TVs from suspending the browser
+            try {
+                tvWakeLockAudio = document.getElementById('sound-score').cloneNode();
+                tvWakeLockAudio.loop = true;
+                tvWakeLockAudio.muted = true; // MUST be muted
+                tvWakeLockAudio.volume = 0;
+                tvWakeLockAudio.play().catch(function(e){});
+            } catch(e) {}
+
             appStarted = true; 
             renderAll();
         }
@@ -486,42 +588,72 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
-        /* --- FEST GALLERY LOGIC (Plays every 2 mins, ONE SHOW ONLY) --- */
+        /* --- DOM CACHED FEST GALLERY LOGIC (Plays every 4 mins, One show only) --- */
         var galleryItems = []; 
         var currentGalleryIndex = 0;
         var galleryActive = false;
+        var galleryDOMGenerated = false; // Flag to check if we already created the elements
         
-        // 2 minutes interval timer (120,000 ms)
-        var galleryTriggerInterval = setInterval(triggerGallery, 120000); 
+        var galleryTimer = null;
 
-        function triggerGallery() {
-            if (!galleryItems || galleryItems.length === 0 || galleryActive) return;
-            galleryActive = true;
-            document.getElementById('gallery-overlay').style.display = 'block';
+        function scheduleNextGallery() {
+            if(galleryTimer) clearTimeout(galleryTimer);
+            galleryTimer = setTimeout(triggerGallery, 240000); // Wait exactly 4 minutes between shows
+        }
+        
+        scheduleNextGallery(); // Start the cycle
+
+        // Generate DOM elements only ONCE and keep them cached for instant playback
+        function buildGalleryDOM() {
+            if (!galleryItems || galleryItems.length === 0) return;
             
-            // Fade in overlay
-            setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 100);
-
             var container = document.getElementById('gallery-media-container');
-            container.innerHTML = ''; // clear old
-
-            // Build elements based on config
+            container.innerHTML = ''; // Clear existing
+            
             galleryItems.forEach(function(item, index) {
+                var wrapper = document.createElement('div');
+                wrapper.className = 'gallery-media-wrapper';
+                wrapper.id = 'g-wrapper-' + index;
+
                 var el;
                 if(item.type === 'video') {
                     el = document.createElement('video');
                     el.src = item.url; 
-                    el.muted = false; // SOUND ENABLED (Since user clicked 'Start')
+                    el.muted = false; // Sound enabled
                     el.playsInline = true;
-                    el.preload = 'auto'; // Faster load
+                    el.loop = false; // STRICTLY no loop
+                    el.preload = 'auto'; // Download in background
                 } else {
                     el = document.createElement('img');
                     el.src = item.url;
                 }
+                
                 el.className = 'gallery-media';
                 el.id = 'g-media-' + index;
-                container.appendChild(el);
+                
+                wrapper.appendChild(el);
+                container.appendChild(wrapper);
             });
+            
+            galleryDOMGenerated = true;
+        }
+
+        function triggerGallery() {
+            if (!galleryItems || galleryItems.length === 0 || galleryActive) {
+                if(!galleryActive) scheduleNextGallery();
+                return;
+            }
+            
+            galleryActive = true;
+            if(galleryTimer) clearTimeout(galleryTimer); // Pause the 4-min countdown while playing
+            
+            // Build DOM if not built yet (or if new items arrived)
+            if(!galleryDOMGenerated) {
+                buildGalleryDOM();
+            }
+
+            document.getElementById('gallery-overlay').style.display = 'block';
+            setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 100);
 
             currentGalleryIndex = 0;
             playNextGalleryItem(); // Starts the one-time show
@@ -535,25 +667,56 @@
             }
 
             var item = galleryItems[currentGalleryIndex];
-            var el = document.getElementById('g-media-' + currentGalleryIndex);
+            var wrapper = document.getElementById('g-wrapper-' + currentGalleryIndex);
+            var mediaEl = document.getElementById('g-media-' + currentGalleryIndex);
+            
+            if(!wrapper || !mediaEl) {
+                // If element is missing for some reason, skip to next
+                currentGalleryIndex++;
+                playNextGalleryItem();
+                return;
+            }
             
             // Hide all media and pause any playing videos
+            var allWrappers = document.querySelectorAll('.gallery-media-wrapper');
+            allWrappers.forEach(function(w) { w.classList.remove('active'); });
+            
             var allMedia = document.querySelectorAll('.gallery-media');
             allMedia.forEach(function(m) { 
-                m.classList.remove('active'); 
-                if(m.tagName === 'VIDEO') { m.pause(); m.currentTime = 0; } 
+                if(m.tagName === 'VIDEO') { 
+                    m.pause(); 
+                    m.currentTime = 0; 
+                    m.loop = false; 
+                    m.onended = null; // Strictly clear old event handlers
+                    m.onerror = null; 
+                } 
             });
             
             // Show current item
-            el.classList.add('active');
+            wrapper.classList.add('active');
 
             if(item.type === 'video') {
-                var playPromise = el.play();
+                mediaEl.loop = false; // Guarantee no looping
+                mediaEl.currentTime = 0; // Reset video to start
+                
+                // Bind strictly once to prevent double-firings on weird TV browsers
+                mediaEl.onended = function() { 
+                    this.onended = null;
+                    playNextGalleryItem(); 
+                };
+                mediaEl.onerror = function() { 
+                    this.onerror = null;
+                    playNextGalleryItem(); 
+                };
+
+                var playPromise = mediaEl.play();
                 if(playPromise !== undefined) {
-                    playPromise.catch(function(e) { console.log("Video AutoPlay prevented", e); });
+                    playPromise.catch(function(e) { 
+                        console.log("Video AutoPlay prevented", e); 
+                        mediaEl.onended = null; // Clean up
+                        playNextGalleryItem(); // Skip if playback fails
+                    });
                 }
-                // When video finishes, automatically go to next item
-                el.onended = function() { playNextGalleryItem(); };
                 currentGalleryIndex++;
                 return; // Exit function, wait for 'onended' event
             }
@@ -568,13 +731,11 @@
             document.getElementById('gallery-overlay').style.opacity = '0';
             setTimeout(function() { 
                 document.getElementById('gallery-overlay').style.display = 'none'; 
-                var container = document.getElementById('gallery-media-container');
-                container.innerHTML = ''; // Clean up DOM
+                // Note: We DO NOT clear the DOM here anymore, so it loads instantly next time.
                 galleryActive = false;
                 
-                // Reset the 2-minute timer for the next show
-                clearInterval(galleryTriggerInterval);
-                galleryTriggerInterval = setInterval(triggerGallery, 120000);
+                // Schedule the next show exactly 4 minutes from NOW
+                scheduleNextGallery();
             }, 1000);
         }
 
@@ -616,7 +777,13 @@
                     var d = snap.data(); 
                     if (d.teams) state.teams = d.teams; 
                     if (d.programs) state.programs = d.programs; 
-                    if (d.gallery) galleryItems = d.gallery; // Fetch Gallery settings
+                    if (d.gallery) {
+                        // Re-build DOM only if gallery items length/content changed
+                        if(galleryItems.length !== d.gallery.length) {
+                            galleryItems = d.gallery;
+                            galleryDOMGenerated = false; // Force rebuild next time
+                        }
+                    }
                     renderAll(); 
                 }
             });
