@@ -28,20 +28,19 @@
         }
         .num-font { font-family: 'Outfit', sans-serif; }
 
-        /* ZERO GRAVITY BACKGROUND EFFECT */
+        /* ZERO GRAVITY BACKGROUND EFFECT (PERFORMANCE MODE) */
         .zero-gravity-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
         }
         .orb {
             position: absolute; border-radius: 50%;
-            animation: floatOrb infinite linear; opacity: 0;
+            animation: pulseOrb infinite ease-in-out;
         }
-        @keyframes floatOrb {
-            0% { transform: translateY(110vh) scale(0.5); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+        @keyframes pulseOrb {
+            0% { opacity: 0.05; }
+            50% { opacity: 0.15; }
+            100% { opacity: 0.05; }
         }
 
         /* OVERLAYS */
@@ -66,8 +65,8 @@
 
         /* HEADER & TITLE */
         .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
-        /* YOUR LOGO HEIGHT IS ADJUSTED HERE */
-        .fest-logo-img { height: 9vh; max-height: 80px; object-fit: contain; filter: drop-shadow(0 0 2vh rgba(56, 189, 248, 0.6)); }
+        /* YOUR LOGO HEIGHT IS ADJUSTED HERE - Removed drop-shadow for performance */
+        .fest-logo-img { height: 9vh; max-height: 80px; object-fit: contain; }
         
         .page-title { 
             text-align: center; font-size: 3vh; color: #fbbf24; margin-bottom: 2vh; 
@@ -78,17 +77,18 @@
 
         /* --- PAGE 1: TOTAL SCORE --- */
         .dashboard-content { display: flex; justify-content: space-around; align-items: center; flex: 1; padding: 0 4vw; min-height: 0; }
-        .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.6); padding: 4vh; border-radius: 4vh; border: 0.2vh solid rgba(255,255,255,0.05); box-shadow: 0 2vh 5vh rgba(0,0,0,0.5); }
+        /* Removed box-shadows for TV Performance */
+        .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); }
         .team-name { font-size: 6vh; font-weight: bold; margin-bottom: 1vh; }
-        .team-name.team-a { color: #fb7185; text-shadow: 0 0 3vh rgba(251, 113, 133, 0.4); }
-        .team-name.team-b { color: #818cf8; text-shadow: 0 0 3vh rgba(129, 140, 248, 0.4); }
-        .huge-points { font-size: 24vh; font-weight: 900; line-height: 1; text-shadow: 0 1vh 3vh rgba(0,0,0,0.5); }
+        .team-name.team-a { color: #fb7185; }
+        .team-name.team-b { color: #818cf8; }
+        .huge-points { font-size: 24vh; font-weight: 900; line-height: 1; }
         
-        .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; box-shadow: inset 0 0 3vh rgba(0,0,0,0.5); }
+        .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; }
 
         .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
-        .stat-box { background: rgba(15, 23, 42, 0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh 3vw; text-align: center; box-shadow: 0 1vh 3vh rgba(0,0,0,0.3); flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
-        .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; text-shadow: 0 0 1.5vh rgba(52,211,153,0.3);}
+        .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
+        .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; }
         .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
         
         /* Animated Stage Name CSS */
@@ -99,9 +99,9 @@
 
         /* --- PAGE 2: LATEST RESULTS --- */
         .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; }
-        .res-card { background: rgba(15,23,42,0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .res-card { background: rgba(15,23,42,0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh; position: relative; display: flex; flex-direction: column; justify-content: center; }
         
-        .res-card.newest { grid-column: span 2; border-color: #10b981; box-shadow: 0 0 3vh rgba(16,185,129,0.3); background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; }
+        .res-card.newest { grid-column: span 2; border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; }
         .res-card.newest .rc-title-text span { font-size: 4vh; }
         .res-card.newest .rc-title-eng { font-size: 2vh; }
         .res-card.newest .rc-cat { font-size: 2vh; padding: 0.5vh 1.5vw; background: #064e3b; color: #34d399; }
@@ -391,23 +391,22 @@
         function createZeroGravity() {
             var bg = document.getElementById('zg-bg');
             var colors = ['#ec4899', '#8b5cf6', '#fbbf24', '#34d399', '#fb7185'];
-            for(var i=0; i<25; i++) {
+            // Reduced to 10 items for better TV performance
+            for(var i=0; i<10; i++) {
                 var orb = document.createElement('div');
                 orb.className = 'orb';
-                var size = Math.random() * 8 + 3; // 3vh to 11vh
+                var size = Math.random() * 15 + 5; 
                 orb.style.width = size + 'vh';
                 orb.style.height = size + 'vh';
-                orb.style.left = Math.random() * 100 + 'vw';
+                orb.style.left = Math.random() * 90 + 'vw';
+                orb.style.top = Math.random() * 80 + 'vh'; // Static positions
                 
                 var color = colors[Math.floor(Math.random() * colors.length)];
                 
-                // FIXED: Replaced radial-gradient with solid color + box-shadow to prevent TV "white block" glitches
                 orb.style.backgroundColor = color;
-                orb.style.opacity = '0.12';
-                orb.style.boxShadow = '0 0 3vh ' + color;
                 
-                orb.style.animationDuration = (Math.random() * 15 + 15) + 's';
-                orb.style.animationDelay = (Math.random() * 15) + 's';
+                orb.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Pulse speed
+                orb.style.animationDelay = (Math.random() * 5) + 's';
                 
                 bg.appendChild(orb);
             }
@@ -434,7 +433,7 @@
                 setInterval(function() {
                     ctx.fillStyle = Math.random() > 0.5 ? '#020617' : '#000000';
                     ctx.fillRect(0,0,10,10);
-                }, 1000);
+                }, 5000); // Slowed down from 1s to 5s for performance
 
                 // 3. Convert the canvas into a 1FPS live video stream
                 if (canvas.captureStream) {
@@ -582,7 +581,7 @@
                 document.body.appendChild(domWakeLock);
                 setInterval(function(){
                     domWakeLock.innerText = "Active: " + Date.now();
-                }, 1000);
+                }, 5000); // Slowed down from 1s to 5s for performance
             } catch(e) {}
 
             appStarted = true; 
