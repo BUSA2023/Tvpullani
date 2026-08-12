@@ -35,7 +35,6 @@
         }
         .orb {
             position: absolute; border-radius: 50%;
-            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
             animation: floatOrb infinite linear; opacity: 0;
         }
         @keyframes floatOrb {
@@ -53,8 +52,6 @@
         }
         .start-btn { background: #ec4899; color: white; padding: 3vh 4vw; font-size: 4vh; font-weight: bold; border-radius: 2vh; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 3vh rgba(236,72,153,0.5); transition: 0.3s;}
         .start-btn:hover { transform: scale(1.05); }
-
-        #flash-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: white; z-index: 9998; opacity: 0; pointer-events: none; }
 
         /* MAIN VIEW CONTAINER (TV Safe Area Padding) */
         .view-container {
@@ -196,7 +193,8 @@
         .gallery-media-wrapper.active { opacity: 1; z-index: 10; }
         
         .gallery-media {
-            width: 100%; height: 100%; max-width: 100%; max-height: 100%; object-fit: contain; /* Prevents cropping on TV */
+            width: 100vw; height: 100vh; object-fit: contain; /* Perfect scaling for portrait/landscape */
+            background-color: #000;
             display: block;
         }
         
@@ -223,12 +221,12 @@
     <audio id="sound-result" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
 
     <div class="zero-gravity-bg" id="zg-bg"></div>
-    <div id="flash-screen"></div>
 
     <!-- START SCREEN (Requires 1 click to enable Audio & Fullscreen on TV) -->
     <div id="start-overlay" onclick="startApp()">
         <button class="start-btn">Start Live TV Display</button>
-        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">OK</p>
+        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center; padding:0 4vw;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക<br>(തുടങ്ങുമ്പോൾ തനിയെ Full-screen ആകും)</p>
+        <p style="margin-top:2vh; font-size:2vh; color:#fb7185; text-align:center; padding:0 4vw; font-weight:bold;">ശ്രദ്ധിക്കുക: ടിവി തനിയെ ഓഫ് ആവാതിരിക്കാൻ Settings ൽ പോയി 'Auto Power Off' അല്ലെങ്കിൽ 'Sleep Timer' OFF ചെയ്യുക.</p>
     </div>
 
     <!-- FEST GALLERY OVERLAY (2-min interval, One show only) -->
@@ -402,7 +400,11 @@
                 orb.style.left = Math.random() * 100 + 'vw';
                 
                 var color = colors[Math.floor(Math.random() * colors.length)];
-                orb.style.background = 'radial-gradient(circle, ' + color + '22 0%, transparent 70%)';
+                
+                // FIXED: Replaced radial-gradient with solid color + box-shadow to prevent TV "white block" glitches
+                orb.style.backgroundColor = color;
+                orb.style.opacity = '0.12';
+                orb.style.boxShadow = '0 0 3vh ' + color;
                 
                 orb.style.animationDuration = (Math.random() * 15 + 15) + 's';
                 orb.style.animationDelay = (Math.random() * 15) + 's';
@@ -416,25 +418,29 @@
         // Fools the TV OS into thinking a live movie is playing, preventing Eco-Standby
         function setupUltimateTVWakeLock() {
             try {
-                // 1. Create a hidden canvas
+                // 1. Create a hidden canvas (Must be inside viewport for TVs to not pause it)
                 var canvas = document.createElement('canvas');
-                canvas.width = 2; canvas.height = 2;
-                canvas.style.position = 'absolute';
-                canvas.style.opacity = '0';
+                canvas.width = 10; canvas.height = 10;
+                canvas.style.position = 'fixed';
+                canvas.style.top = '0px'; 
+                canvas.style.left = '0px';
+                canvas.style.opacity = '0.01';
                 canvas.style.pointerEvents = 'none';
+                canvas.style.zIndex = '1';
                 document.body.appendChild(canvas);
                 var ctx = canvas.getContext('2d');
                 
                 // 2. Draw a continuously changing pixel to prevent static frame detection by TV AI
                 setInterval(function() {
-                    ctx.fillStyle = Math.random() > 0.5 ? '#010101' : '#000000';
-                    ctx.fillRect(0,0,2,2);
+                    ctx.fillStyle = Math.random() > 0.5 ? '#020617' : '#000000';
+                    ctx.fillRect(0,0,10,10);
                 }, 1000);
 
                 // 3. Convert the canvas into a 1FPS live video stream
                 if (canvas.captureStream) {
                     var stream = canvas.captureStream(1); 
                     var wakeVideo = document.createElement('video');
+                    wakeVideo.id = 'wake-video-elem'; // Added ID to track it
                     wakeVideo.srcObject = stream;
                     wakeVideo.setAttribute('playsinline', '');
                     wakeVideo.setAttribute('muted', '');
@@ -442,14 +448,14 @@
                     wakeVideo.muted = true;
                     wakeVideo.loop = true;
                     
-                    // Keep it in the DOM but totally invisible to the audience
+                    // Keep it in the DOM, inside the viewport, but totally invisible to the audience
                     wakeVideo.style.position = 'fixed';
-                    wakeVideo.style.top = '0';
-                    wakeVideo.style.left = '0';
-                    wakeVideo.style.width = '1px';
-                    wakeVideo.style.height = '1px';
-                    wakeVideo.style.opacity = '0.001';
-                    wakeVideo.style.zIndex = '-9999';
+                    wakeVideo.style.top = '0px';
+                    wakeVideo.style.left = '0px';
+                    wakeVideo.style.width = '10px';
+                    wakeVideo.style.height = '10px';
+                    wakeVideo.style.opacity = '0.01';
+                    wakeVideo.style.zIndex = '1';
                     wakeVideo.style.pointerEvents = 'none';
                     document.body.appendChild(wakeVideo);
                     
@@ -498,11 +504,16 @@
                     if (tvWakeLockAudio && tvWakeLockAudio.paused) {
                         tvWakeLockAudio.play().catch(function(e){});
                     }
+                    var wv = document.getElementById('wake-video-elem');
+                    if (wv && wv.paused) wv.play().catch(function(e){});
                 } catch(e) {}
 
                 // Simulate phantom user interaction to trick TV OS into staying awake
                 try { document.dispatchEvent(new MouseEvent('mousemove', { bubbles: true })); } catch(e){}
                 try { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); } catch(e){}
+                
+                // TV OS Hack: Change URL history silently to simulate web navigation activity
+                try { history.replaceState(null, null, '#active=' + Date.now()); } catch(e){}
             }
         }, 15000); // Increased frequency to 15 seconds
 
@@ -561,6 +572,19 @@
                 tvWakeLockAudio.play().catch(function(e){});
             } catch(e) {}
 
+            // NEW: ULTIMATE ANDROID TV WEBVIEW WAKE LOCK (Forced DOM Mutation)
+            // Forces Android TVs to keep the processor awake by simulating active text changes
+            try {
+                var domWakeLock = document.createElement('div');
+                domWakeLock.style.position = 'fixed';
+                domWakeLock.style.top = '-9999px'; // Completely off-screen
+                domWakeLock.style.opacity = '0.01';
+                document.body.appendChild(domWakeLock);
+                setInterval(function(){
+                    domWakeLock.innerText = "Active: " + Date.now();
+                }, 1000);
+            } catch(e) {}
+
             appStarted = true; 
             renderAll();
         }
@@ -579,9 +603,6 @@
         
         function triggerEpicReveal() {
             playSound('result');
-            var flash = document.getElementById('flash-screen');
-            flash.style.transition = 'none'; flash.style.opacity = '1';
-            setTimeout(function() { flash.style.transition = 'opacity 0.8s ease-out'; flash.style.opacity = '0'; }, 50);
             
             try {
                 var duration = 1.5 * 1000; var end = Date.now() + duration;
@@ -646,6 +667,15 @@
                 }
                 
                 el.className = 'gallery-media';
+                // Inline styles to guarantee TVs respect dimensions natively
+                // FIXED: Using max-width and auto height ensures portrait videos maintain aspect ratio!
+                el.style.maxWidth = '100vw';
+                el.style.maxHeight = '100vh';
+                el.style.width = 'auto';
+                el.style.height = 'auto';
+                el.style.objectFit = 'contain';
+                el.style.backgroundColor = '#000';
+                
                 el.id = 'g-media-' + index;
                 
                 wrapper.appendChild(el);
