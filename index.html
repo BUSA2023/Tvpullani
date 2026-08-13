@@ -166,15 +166,18 @@
             transition: opacity 0.5s ease-in-out;
         }
         
-        /* The container where elements are injected and destroyed dynamically */
+        /* Fixed for Portrait Video on TVs: strict 100vw/vh dimensions */
         #gallery-media-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
             display: flex; justify-content: center; align-items: center;
+            background-color: #000;
         }
         
         .gallery-media {
-            max-width: 100vw; max-height: 100vh; object-fit: contain;
-            background-color: #000;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* PERFECTLY handles portrait vs landscape */
+            background-color: transparent;
         }
         
         .gallery-badge {
@@ -189,8 +192,9 @@
 <body>
 
     <!-- AUDIO FILES -->
+    <!-- Updated the Audio source to properly include the '%20' for the space in the filename -->
     <audio id="sound-score" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
-    <audio id="sound-result" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
+    <audio id="sound-result" src="mixkit-sci-fi-reject-notification-896%20(2).wav" preload="auto"></audio>
 
     <div class="zero-gravity-bg" id="zg-bg"></div>
 
@@ -203,7 +207,6 @@
 
     <!-- HIGH-PERFORMANCE FEST GALLERY -->
     <div id="gallery-overlay">
-        <!-- Media is injected here and DESTROYED when done to save RAM -->
         <div id="gallery-media-container"></div>
         <div class="gallery-badge">
             <span style="font-size:4vh;">📸</span> 
@@ -340,11 +343,10 @@
     <script>
         var appStarted = false;
 
-        // Optimized Background (Reduced items for RAM)
         function createZeroGravity() {
             var bg = document.getElementById('zg-bg');
             var colors = ['#ec4899', '#8b5cf6', '#fbbf24', '#34d399', '#fb7185'];
-            for(var i=0; i<6; i++) { // Max 6 items for TV performance
+            for(var i=0; i<6; i++) { 
                 var orb = document.createElement('div');
                 orb.className = 'orb';
                 var size = Math.random() * 10 + 5; 
@@ -357,7 +359,6 @@
         }
         createZeroGravity();
 
-        // Native, Lightweight WakeLock (NO Canvas/Video hacks)
         var wakeLockObj = null;
         async function preventSleep() {
             try {
@@ -372,7 +373,7 @@
             } catch(e) {}
         }
         
-        setInterval(function() { if (appStarted) preventSleep(); }, 60000); // Check once a minute
+        setInterval(function() { if (appStarted) preventSleep(); }, 60000); 
 
         function toggleFullScreen() {
             try {
@@ -403,11 +404,14 @@
             if (!appStarted) return;
             try { 
                 var audio = document.getElementById(type === 'score' ? 'sound-score' : 'sound-result'); 
-                if (audio) { audio.currentTime = 0; audio.play().catch(function(){}); }
+                if (audio) { 
+                    audio.pause();
+                    audio.currentTime = 0; 
+                    audio.play().catch(function(e){ console.log("Audio play blocked", e); }); 
+                }
             } catch(e) {}
         }
         
-        // Highly Optimized Confetti (1 Single Burst, less particles)
         function triggerEpicReveal() {
             playSound('result');
             try {
@@ -426,7 +430,6 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
-        /* --- RAM-OPTIMIZED GALLERY LOGIC --- */
         var galleryItems = []; 
         var currentGalleryIndex = 0;
         var galleryActive = false;
@@ -453,10 +456,10 @@
             playNextGalleryItem(); 
         }
 
-        // CRUCIAL TV OPTIMIZATION: Create media element just-in-time, then permanently destroy it.
+        // JS explicitly sets video to 100% width/height so TV hardware renders it
         function playNextGalleryItem() {
             var container = document.getElementById('gallery-media-container');
-            container.innerHTML = ''; // Force garbage collection of previous video RAM
+            container.innerHTML = ''; 
 
             if(currentGalleryIndex >= galleryItems.length) {
                 endGalleryShow();
@@ -472,7 +475,12 @@
                 el.className = 'gallery-media';
                 el.playsInline = true;
                 el.setAttribute('playsinline', ''); 
-                el.preload = 'metadata'; // Saves huge amount of memory
+                el.preload = 'metadata'; 
+                
+                // Extra safety for TV portrait video constraints
+                el.style.width = '100%';
+                el.style.height = '100%';
+                el.style.objectFit = 'contain';
                 
                 el.onended = function() { playNextGalleryItem(); };
                 el.onerror = function() { playNextGalleryItem(); };
@@ -482,7 +490,7 @@
                 var playPromise = el.play();
                 if(playPromise !== undefined) {
                     playPromise.catch(function() { 
-                        el.muted = true; // Fallback for strict TVs
+                        el.muted = true; 
                         var mPromise = el.play();
                         if(mPromise) mPromise.catch(function(){ playNextGalleryItem(); });
                     });
@@ -491,6 +499,9 @@
                 el = document.createElement('img');
                 el.src = item.url;
                 el.className = 'gallery-media';
+                el.style.width = '100%';
+                el.style.height = '100%';
+                el.style.objectFit = 'contain';
                 container.appendChild(el);
                 setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
             }
@@ -501,13 +512,12 @@
             document.getElementById('gallery-overlay').style.opacity = '0';
             setTimeout(function() { 
                 document.getElementById('gallery-overlay').style.display = 'none'; 
-                document.getElementById('gallery-media-container').innerHTML = ''; // Final Cleanup
+                document.getElementById('gallery-media-container').innerHTML = ''; 
                 galleryActive = false;
                 scheduleNextGallery();
             }, 500);
         }
 
-        // CAROUSEL LOGIC
         var currentViewIndex = 1;
         setInterval(function() {
             if(galleryActive) return; 
@@ -516,7 +526,6 @@
             document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
         }, 15000); 
 
-        // FIREBASE SETUP
         var firebaseConfig = {
             apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
             authDomain: "pullani-6a39b.firebaseapp.com",
@@ -532,11 +541,10 @@
         var state = { teams: { teamA: { name: 'Team A' }, teamB: { name: 'Team B' } }, programs: [], candidates: [], results: [] };
         var prevScoreA = -1; var prevScoreB = -1; var prevTotalRes = -1;
 
-        // DEBOUNCER: Prevents TV from freezing if 10 database changes happen in 1 second
         var renderTimer = null;
         function scheduleRender() {
             if(renderTimer) clearTimeout(renderTimer);
-            renderTimer = setTimeout(renderAll, 500); // Wait 0.5s before redrawing
+            renderTimer = setTimeout(renderAll, 500); 
         }
 
         auth.signInAnonymously().then(function() {
@@ -557,7 +565,6 @@
             });
         });
 
-        // Data helpers
         function getProg(id) { for(var i=0; i<state.programs.length; i++) if(state.programs[i].id === id) return state.programs[i]; return null; }
         function getCand(id) { for(var i=0; i<state.candidates.length; i++) if(state.candidates[i].id === id) return state.candidates[i]; return null; }
         function getTeamName(tid) { return (state.teams && state.teams[tid]) ? state.teams[tid].name : '-'; }
@@ -632,7 +639,7 @@
 
             document.getElementById('stat-programs').innerText = state.programs.length;
             document.getElementById('stat-candidates').innerText = state.candidates.length;
-            document.getElementById('stat-teams').innerText = 2; // Hardcoded optimizations
+            document.getElementById('stat-teams').innerText = 2; 
 
             var taName = getTeamName('teamA'); var tbName = getTeamName('teamB');
             [1,2,3,4].forEach(n => { document.getElementById('name-teamA-'+n).innerText = taName; document.getElementById('name-teamB-'+n).innerText = tbName; });
@@ -681,4 +688,5 @@
     </script>
 </body>
 </html>
+
 
