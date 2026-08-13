@@ -16,30 +16,29 @@
     
     <style>
         /* ========================================================
-           TV OPTIMIZED CSS (High Performance, Low Memory)
+           TV OPTIMIZED CSS (Premium Layout & High Performance)
            ======================================================== */
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: 'Anek Malayalam', sans-serif; 
-            background: #020617; /* Solid fallback */
+            background: #020617; 
             background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
             color: #ffffff; 
-            overflow: hidden; /* STRICTLY NO SCROLLING */
+            overflow: hidden; 
             height: 100vh; width: 100vw;
-            /* Force Hardware Acceleration */
             transform: translateZ(0); 
             backface-visibility: hidden;
         }
         .num-font { font-family: 'Outfit', sans-serif; }
 
-        /* ZERO GRAVITY BACKGROUND EFFECT (PERFORMANCE MODE) */
+        /* ZERO GRAVITY BACKGROUND EFFECT */
         .zero-gravity-bg {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
         }
         .orb {
             position: absolute; border-radius: 50%;
-            will-change: opacity; /* Optimizes RAM/GPU usage */
+            will-change: opacity; 
             animation: pulseOrb infinite ease-in-out;
         }
         @keyframes pulseOrb {
@@ -66,7 +65,7 @@
             overflow: hidden;
         }
         .view-active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
         /* HEADER & TITLE */
         .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
@@ -77,17 +76,18 @@
             font-weight: bold; background: rgba(0,0,0,0.4); padding: 1vh; 
             border-radius: 2vh; text-transform: uppercase; letter-spacing: 0.2vw;
             flex-shrink: 0;
+            border-bottom: 0.3vh solid rgba(251, 191, 36, 0.3);
         }
 
         /* --- PAGE 1: TOTAL SCORE --- */
         .dashboard-content { display: flex; justify-content: space-around; align-items: center; flex: 1; padding: 0 4vw; min-height: 0; }
-        .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); }
+        .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); box-shadow: 0 2vh 4vh rgba(0,0,0,0.5); }
         .team-name { font-size: 6vh; font-weight: bold; margin-bottom: 1vh; }
         .team-name.team-a { color: #fb7185; }
         .team-name.team-b { color: #818cf8; }
         .huge-points { font-size: 24vh; font-weight: 900; line-height: 1; }
         
-        .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; }
+        .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; box-shadow: inset 0 0 2vh rgba(0,0,0,0.8); }
 
         .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
         .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; }
@@ -95,104 +95,105 @@
         .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
 
         /* --- PAGE 2: LATEST RESULTS --- */
-        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; }
-        .res-card { background: rgba(15,23,42,0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh; position: relative; display: flex; flex-direction: column; justify-content: center; }
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; align-content: start; }
+        .res-card { background: rgba(15,23,42,0.9); border: 0.2vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh; position: relative; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 1vh 2vh rgba(0,0,0,0.3); }
         
-        .res-card.newest { grid-column: span 2; border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; }
-        .res-card.newest .rc-title-text span { font-size: 4vh; }
+        .res-card.newest { grid-column: span 2; border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; border-width: 0.3vh; }
+        .res-card.newest .rc-title-text span { font-size: 4vh; color: #10b981;}
         .res-card.newest .rc-title-eng { font-size: 2vh; }
-        .res-card.newest .rc-cat { font-size: 2vh; padding: 0.5vh 1.5vw; background: #064e3b; color: #34d399; }
-        .res-card.newest .rc-name { font-size: 3.5vh; }
+        .res-card.newest .rc-cat { font-size: 2vh; padding: 0.8vh 1.5vw; background: #064e3b; color: #34d399; border-radius: 1vh;}
+        .res-card.newest .rc-name { font-size: 3vh; }
         .res-card.newest .rc-team { font-size: 2vh; padding: 0.5vh 1vw; }
 
-        .rc-title { font-weight: bold; color: #fff; border-bottom: 0.1vh solid rgba(255,255,255,0.1); padding-bottom: 1vh; margin-bottom: 1.5vh; display: flex; justify-content: space-between; align-items: center;}
+        .rc-title { font-weight: bold; color: #fff; border-bottom: 0.1vh solid rgba(255,255,255,0.1); padding-bottom: 1.5vh; margin-bottom: 1.5vh; display: flex; justify-content: space-between; align-items: center;}
         .rc-title-text { display: flex; flex-direction: column; }
         .rc-title-text span { font-size: 2.8vh; }
-        .rc-title-eng { font-size: 1.5vh; color: #94a3b8; font-weight: normal; margin-top: 0.5vh; }
+        .rc-title-eng { font-size: 1.6vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; }
         
-        .rc-cat { font-size: 1.5vh; background: #1e293b; padding: 0.5vh 1vw; border-radius: 1vh; color: #94a3b8; font-weight: bold; text-transform: uppercase;}
-        .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 1vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; }
-        .rc-name { font-size: 2.5vh; font-weight: bold; color: #f1f5f9; }
-        .rc-team { font-size: 1.5vh; font-weight: bold; padding: 0.5vh 1vw; border-radius: 0.8vh; background: rgba(255,255,255,0.1); }
+        .rc-cat { font-size: 1.5vh; background: #1e293b; padding: 0.5vh 1vw; border-radius: 0.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase;}
+        .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 1.2vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; border-left: 0.5vh solid transparent;}
+        .rc-row.first { border-left-color: #fbbf24; }
+        .rc-row.second { border-left-color: #cbd5e1; }
+        .rc-row.third { border-left-color: #d97706; }
+        
+        .rc-name { font-size: 2.2vh; font-weight: bold; color: #f1f5f9; display: flex; align-items: center; gap: 1vw;}
+        .rc-team { font-size: 1.6vh; font-weight: bold; padding: 0.5vh 1vw; border-radius: 0.8vh; background: rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.1vw;}
 
         /* --- PAGE 3: CATEGORY SCORES --- */
         .category-container { display: flex; justify-content: space-between; gap: 3vw; flex: 1; align-items: center; min-height: 0;}
-        .cat-box { flex: 1; background: rgba(15,23,42,0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 3vh; padding: 5vh 3vw; text-align: center; }
+        .cat-box { flex: 1; background: rgba(15,23,42,0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 3vh; padding: 5vh 3vw; text-align: center; box-shadow: 0 1vh 3vh rgba(0,0,0,0.4);}
         .cat-title { font-size: 4vh; font-weight: bold; color: #fbbf24; margin-bottom: 4vh; text-transform: uppercase; border-bottom: 0.2vh solid rgba(255,255,255,0.1); padding-bottom: 1.5vh;}
-        .cat-team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh; background: rgba(0,0,0,0.3); padding: 2vh 3vw; border-radius: 2vh; }
+        .cat-team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh; background: rgba(0,0,0,0.3); padding: 2.5vh 3vw; border-radius: 2vh; }
         .cat-tname { font-size: 3vh; font-weight: bold; }
         .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
-        .cat-pts { font-size: 5vh; font-weight: 900; color: #fff; }
+        .cat-pts { font-size: 5.5vh; font-weight: 900; color: #fff; text-shadow: 0 0.5vh 1vh rgba(0,0,0,0.5);}
 
-        /* --- POINT TABLES (TV Optimized) --- */
+        /* --- POINT TABLES (Perfectly Arranged) --- */
         .table-container { 
-            background: rgba(15, 23, 42, 0.8); border-radius: 2vh; padding: 1vh; 
-            border: 0.1vh solid rgba(255,255,255,0.1); 
+            background: rgba(15, 23, 42, 0.9); border-radius: 2vh; padding: 0.5vh; 
+            border: 0.1vh solid rgba(255,255,255,0.15); 
             flex: 1; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 2vh 4vh rgba(0,0,0,0.5);
         }
-        .pt-header-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.8); border-radius: 1vh 1vh 0 0; flex-shrink: 0; }
+        .pt-header-table { width: 100%; border-collapse: collapse; background: #0f172a; border-radius: 1.5vh 1.5vh 0 0; flex-shrink: 0; border-bottom: 0.3vh solid #334155;}
         
         .no-scroll-wrapper { 
-            flex: 1; background: rgba(0,0,0,0.4); border-radius: 0 0 1vh 1vh; 
+            flex: 1; background: rgba(0,0,0,0.6); border-radius: 0 0 1.5vh 1.5vh; 
             overflow: hidden; 
             display: flex; flex-direction: column;
         }
         
         .pt-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
-        .pt-table tbody tr { height: 1%; } 
+        .pt-table tbody tr { height: 1%; transition: background 0.2s; } 
+        
+        .pt-table tbody tr:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
+        .pt-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.3); }
 
         th, td { text-align: center; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
-        .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; border-bottom: 0.2vh solid #334155; padding: 1vh;}
+        .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; padding: 1.5vh 0; letter-spacing: 0.1vw;}
         
-        .pt-table td { padding: 0.2vh 1vw; font-size: 2.2vh; font-weight: bold; } 
+        .pt-table td { padding: 0.8vh 1vw; font-size: 2.4vh; font-weight: bold; vertical-align: middle; } 
         .t-left { text-align: left !important; padding-left: 2vw !important; vertical-align: middle;}
         
         .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; overflow: hidden; }
-        .p-name-txt { font-size: 2.2vh; font-weight: bold; display: flex; flex-direction: column; line-height: 1.1; color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 15vw;}
+        .p-name-txt { font-size: 2.2vh; font-weight: bold; display: flex; flex-direction: column; line-height: 1.2; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20vw;}
         .p-name-eng { font-size: 1.4vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; }
         
-        .s-tag { font-size: 1.2vh; background: #334155; padding: 0.4vh 0.6vw; border-radius: 0.5vh; color: #cbd5e1; margin-left: 1vw; font-weight: bold; text-transform: uppercase; flex-shrink: 0;}
-        .pt-team-a { color: #fb7185; font-size: 2.5vh !important; } 
-        .pt-team-b { color: #818cf8; font-size: 2.5vh !important; }
+        .s-tag { font-size: 1.2vh; background: #334155; padding: 0.4vh 0.8vw; border-radius: 0.5vh; color: #e2e8f0; margin-left: 1vw; font-weight: bold; text-transform: uppercase; flex-shrink: 0; box-shadow: inset 0 0 0.5vh rgba(0,0,0,0.3);}
+        
+        .pt-team-a { color: #fb7185; font-size: 2.8vh !important; font-weight: 900;} 
+        .pt-team-b { color: #818cf8; font-size: 2.8vh !important; font-weight: 900;}
+
+        .border-divider { border-left: 0.3vh solid rgba(255,255,255,0.1); }
+        .pts-col { font-size: 2.6vh !important; }
+
+        /* --- PAGE 7: INLINE GALLERY (NEW) --- */
+        .gallery-wrapper {
+            flex: 1; display: flex; justify-content: center; align-items: center; padding: 2vh;
+        }
+        #inline-gallery-container {
+            width: 80vw; height: 60vh; 
+            background: #000; 
+            border: 0.5vh solid rgba(255,255,255,0.15); 
+            border-radius: 3vh; 
+            overflow: hidden; 
+            box-shadow: 0 3vh 6vh rgba(0,0,0,0.7), inset 0 0 5vh rgba(0,0,0,0.8); 
+            position: relative; 
+            display: flex; justify-content: center; align-items: center;
+        }
+        .gallery-media {
+            width: 100%; height: 100%; object-fit: contain; background-color: transparent;
+        }
 
         /* TOAST */
-        #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s ease-out; z-index: 10000; box-shadow: 0 1vh 3vh rgba(0,0,0,0.5); }
+        #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000; box-shadow: 0 1vh 3vh rgba(0,0,0,0.5); border: 0.2vh solid #34d399;}
         #toast.show { transform: translateY(0); }
 
-        /* --- HIGH PERFORMANCE GALLERY --- */
-        #gallery-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; z-index: 9500; display: none; opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-        
-        /* Fixed for Portrait Video on TVs: strict 100vw/vh dimensions */
-        #gallery-media-container {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-            background-color: #000;
-        }
-        
-        .gallery-media {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* PERFECTLY handles portrait vs landscape */
-            background-color: transparent;
-        }
-        
-        .gallery-badge {
-            position: absolute; bottom: 6vh; right: 4vw;
-            background: rgba(0,0,0,0.8); color: #fff; padding: 2vh 3vw;
-            border-radius: 2vh; font-size: 3vh; font-weight: bold;
-            border: 0.2vh solid rgba(255,255,255,0.1); z-index: 100;
-            display: flex; align-items: center; gap: 2vw;
-        }
     </style>
 </head>
 <body>
 
     <!-- AUDIO FILES -->
-    <!-- Updated the Audio source to properly include the '%20' for the space in the filename -->
     <audio id="sound-score" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
     <audio id="sound-result" src="mixkit-sci-fi-reject-notification-896%20(2).wav" preload="auto"></audio>
 
@@ -203,18 +204,6 @@
         <button class="start-btn">Start Live TV Display</button>
         <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക</p>
         <p style="margin-top:2vh; font-size:2vh; color:#fb7185; text-align:center; font-weight:bold;">ടിവി തനിയെ ഓഫ് ആവാതിരിക്കാൻ Settings ൽ പോയി 'Auto Power Off' OFF ചെയ്യുക.</p>
-    </div>
-
-    <!-- HIGH-PERFORMANCE FEST GALLERY -->
-    <div id="gallery-overlay">
-        <div id="gallery-media-container"></div>
-        <div class="gallery-badge">
-            <span style="font-size:4vh;">📸</span> 
-            <div>
-                <div style="font-size: 1.5vh; color: #fbbf24; text-transform: uppercase;">Fest Gallery</div>
-                <div style="font-size: 2.5vh; line-height: 1;">മെഹ്ഫിലെ നൂർ 2026</div>
-            </div>
-        </div>
     </div>
 
     <div id="toast">പുതിയ അപ്ഡേറ്റ്!</div>
@@ -284,12 +273,13 @@
                 <table class="pt-header-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 28%;">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a" style="width: 36%;" id="th-teamA-4">Team A</th>
-                            <th colspan="3" class="pt-team-b" style="width: 36%; border-left:0.2vh solid #334155;" id="th-teamB-4">Team B</th>
+                            <th rowspan="2" class="t-left" style="width: 34%;">മത്സരം (Program)</th>
+                            <th colspan="3" class="pt-team-a border-divider" style="width: 33%;" id="th-teamA-4">Team A</th>
+                            <th colspan="3" class="pt-team-b border-divider" style="width: 33%;" id="th-teamB-4">Team B</th>
                         </tr>
                         <tr>
-                            <th>🥇</th><th>🥈</th><th>🥉</th><th style="border-left:0.2vh solid #334155;">🥇</th><th>🥈</th><th>🥉</th>
+                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
+                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
                         </tr>
                     </thead>
                 </table>
@@ -305,12 +295,13 @@
                 <table class="pt-header-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 28%;">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a" style="width: 36%;" id="th-teamA-5">Team A</th>
-                            <th colspan="3" class="pt-team-b" style="width: 36%; border-left:0.2vh solid #334155;" id="th-teamB-5">Team B</th>
+                            <th rowspan="2" class="t-left" style="width: 34%;">മത്സരം (Program)</th>
+                            <th colspan="3" class="pt-team-a border-divider" style="width: 33%;" id="th-teamA-5">Team A</th>
+                            <th colspan="3" class="pt-team-b border-divider" style="width: 33%;" id="th-teamB-5">Team B</th>
                         </tr>
                         <tr>
-                            <th>🥇</th><th>🥈</th><th>🥉</th><th style="border-left:0.2vh solid #334155;">🥇</th><th>🥈</th><th>🥉</th>
+                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
+                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
                         </tr>
                     </thead>
                 </table>
@@ -326,16 +317,28 @@
                 <table class="pt-header-table">
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 28%;">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a" style="width: 36%;" id="th-teamA-6">Team A</th>
-                            <th colspan="3" class="pt-team-b" style="width: 36%; border-left:0.2vh solid #334155;" id="th-teamB-6">Team B</th>
+                            <th rowspan="2" class="t-left" style="width: 34%;">മത്സരം (Program)</th>
+                            <th colspan="3" class="pt-team-a border-divider" style="width: 33%;" id="th-teamA-6">Team A</th>
+                            <th colspan="3" class="pt-team-b border-divider" style="width: 33%;" id="th-teamB-6">Team B</th>
                         </tr>
                         <tr>
-                            <th>🥇</th><th>🥈</th><th>🥉</th><th style="border-left:0.2vh solid #334155;">🥇</th><th>🥈</th><th>🥉</th>
+                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
+                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
                         </tr>
                     </thead>
                 </table>
                 <div class="no-scroll-wrapper"><table class="pt-table"><tbody id="table-body-senior-nonstage"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- PAGE 7: INLINE FEST GALLERY -->
+        <div id="view-7" class="view-container">
+            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
+            <div class="page-title">📸 ഫെസ്റ്റ് ഗാലറി (FEST GALLERY)</div>
+            <div class="gallery-wrapper">
+                <div id="inline-gallery-container">
+                    <!-- Video/Image loads here -->
+                </div>
             </div>
         </div>
     </div>
@@ -372,7 +375,6 @@
                 }
             } catch(e) {}
         }
-        
         setInterval(function() { if (appStarted) preventSleep(); }, 60000); 
 
         function toggleFullScreen() {
@@ -398,6 +400,7 @@
 
             appStarted = true; 
             scheduleRender();
+            startCarousel();
         }
 
         function playSound(type) {
@@ -407,22 +410,19 @@
                 if (audio) { 
                     audio.pause();
                     audio.currentTime = 0; 
-                    audio.play().catch(function(e){ console.log("Audio play blocked", e); }); 
+                    audio.play().catch(function(e){}); 
                 }
             } catch(e) {}
         }
         
         function triggerEpicReveal() {
             playSound('result');
-            try {
-                confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] });
-            } catch(e) {}
-
+            try { confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] }); } catch(e) {}
             showToast("🔥 പുതിയ റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു! 🔥");
             
-            currentViewIndex = 2; 
-            for(var i=1; i<=6; i++) document.getElementById('view-' + i).className = 'view-container';
-            document.getElementById('view-2').className = 'view-container view-active';
+            // Instantly jump to Results View
+            currentViewIndex = 1; // set to 1 because moveToNextView will ++ it to 2
+            moveToNextView();
         }
 
         function showToast(msg) {
@@ -430,102 +430,103 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
+        // ==========================================
+        // UNIFIED TV CAROUSEL & INLINE GALLERY LOGIC
+        // ==========================================
         var galleryItems = []; 
         var currentGalleryIndex = 0;
-        var galleryActive = false;
-        var galleryTimer = null;
+        
+        var currentViewIndex = 1;
+        var carouselTimer = null;
+        var totalViews = 7; // Total number of pages including Gallery
 
-        function scheduleNextGallery() {
-            if(galleryTimer) clearTimeout(galleryTimer);
-            galleryTimer = setTimeout(triggerGallery, 240000); // 4 minutes
+        function startCarousel() {
+            if(carouselTimer) clearTimeout(carouselTimer);
+            carouselTimer = setTimeout(moveToNextView, 15000); // 15 seconds per page
         }
-        scheduleNextGallery();
 
-        function triggerGallery() {
-            if (!galleryItems || galleryItems.length === 0 || galleryActive) {
-                if(!galleryActive) scheduleNextGallery();
-                return;
-            }
-            galleryActive = true;
-            if(galleryTimer) clearTimeout(galleryTimer);
+        function moveToNextView() {
+            if(carouselTimer) clearTimeout(carouselTimer);
             
-            document.getElementById('gallery-overlay').style.display = 'block';
-            setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 50);
-
-            currentGalleryIndex = 0;
-            playNextGalleryItem(); 
-        }
-
-        // JS explicitly sets video to 100% width/height so TV hardware renders it
-        function playNextGalleryItem() {
-            var container = document.getElementById('gallery-media-container');
-            container.innerHTML = ''; 
-
-            if(currentGalleryIndex >= galleryItems.length) {
-                endGalleryShow();
-                return;
+            // AGGRESSIVE RAM CLEANUP: Destroy video if we are leaving the Gallery View
+            var galleryBox = document.getElementById('inline-gallery-container');
+            if (galleryBox.innerHTML !== '') {
+                var oldVid = galleryBox.querySelector('video');
+                if(oldVid) { oldVid.pause(); oldVid.removeAttribute('src'); oldVid.load(); }
+                galleryBox.innerHTML = '';
             }
 
-            var item = galleryItems[currentGalleryIndex];
-            var el;
+            currentViewIndex++;
+            
+            // Skip Gallery View (Page 7) if there are no photos/videos uploaded
+            if (currentViewIndex === 7 && (!galleryItems || galleryItems.length === 0)) {
+                currentViewIndex = 1; 
+            } else if (currentViewIndex > totalViews) {
+                currentViewIndex = 1; // Loop back to Page 1
+            }
 
-            if(item.type === 'video') {
-                el = document.createElement('video');
+            // Hide all, Show Current
+            for(var i=1; i<=totalViews; i++) {
+                document.getElementById('view-' + i).className = 'view-container';
+            }
+            document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
+
+            // If it is Gallery View, handle media loading
+            if (currentViewIndex === 7) {
+                playInlineGalleryItem();
+            } else {
+                startCarousel(); // Normal 15s wait
+            }
+        }
+
+        function playInlineGalleryItem() {
+            var container = document.getElementById('inline-gallery-container');
+            
+            if (currentGalleryIndex >= galleryItems.length) currentGalleryIndex = 0;
+            var item = galleryItems[currentGalleryIndex];
+            currentGalleryIndex++; 
+
+            if (item.type === 'video') {
+                var el = document.createElement('video');
                 el.src = item.url; 
                 el.className = 'gallery-media';
                 el.playsInline = true;
                 el.setAttribute('playsinline', ''); 
-                el.preload = 'metadata'; 
+                el.preload = 'metadata'; // Saves Network Bandwidth
                 
-                // Extra safety for TV portrait video constraints
-                el.style.width = '100%';
-                el.style.height = '100%';
-                el.style.objectFit = 'contain';
-                
-                el.onended = function() { playNextGalleryItem(); };
-                el.onerror = function() { playNextGalleryItem(); };
+                // When Video finishes, move to Next View automatically
+                el.onended = function() { moveToNextView(); };
+                el.onerror = function() { moveToNextView(); };
 
                 container.appendChild(el);
                 
                 var playPromise = el.play();
                 if(playPromise !== undefined) {
                     playPromise.catch(function() { 
-                        el.muted = true; 
+                        el.muted = true; // Fallback for strict TV browsers
                         var mPromise = el.play();
-                        if(mPromise) mPromise.catch(function(){ playNextGalleryItem(); });
+                        if(mPromise) mPromise.catch(function(){ moveToNextView(); });
                     });
                 }
+                
+                // Safety net: If video hangs for 2 minutes, force next slide
+                carouselTimer = setTimeout(moveToNextView, 120000); 
+
             } else {
-                el = document.createElement('img');
+                // It's an Image
+                var el = document.createElement('img');
                 el.src = item.url;
                 el.className = 'gallery-media';
-                el.style.width = '100%';
-                el.style.height = '100%';
-                el.style.objectFit = 'contain';
                 container.appendChild(el);
-                setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
+                
+                // Wait item.duration (default 10s) then go to next slide
+                carouselTimer = setTimeout(moveToNextView, (item.duration || 10) * 1000);
             }
-            currentGalleryIndex++;
         }
 
-        function endGalleryShow() {
-            document.getElementById('gallery-overlay').style.opacity = '0';
-            setTimeout(function() { 
-                document.getElementById('gallery-overlay').style.display = 'none'; 
-                document.getElementById('gallery-media-container').innerHTML = ''; 
-                galleryActive = false;
-                scheduleNextGallery();
-            }, 500);
-        }
-
-        var currentViewIndex = 1;
-        setInterval(function() {
-            if(galleryActive) return; 
-            for(var i=1; i<=6; i++) document.getElementById('view-' + i).className = 'view-container';
-            currentViewIndex = (currentViewIndex % 6) + 1;
-            document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
-        }, 15000); 
-
+        // ==========================================
+        // FIREBASE & DATA RENDERING
+        // ==========================================
         var firebaseConfig = {
             apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
             authDomain: "pullani-6a39b.firebaseapp.com",
@@ -571,13 +572,17 @@
 
         function generateTableRows(programList) {
             var tbody = "";
-            if (programList.length === 0) return "<tr><td colspan='7' style='color:#64748b;'>പ്രോഗ്രാമുകൾ ചേർത്തിട്ടില്ല</td></tr>";
+            if (programList.length === 0) return "<tr><td colspan='7' style='color:#64748b; padding: 4vh;'>പ്രോഗ്രാമുകൾ ചേർത്തിട്ടില്ല</td></tr>";
+            
             for (var p = 0; p < programList.length; p++) {
                 var tProg = programList[p];
                 var names = tProg.name.split('\n');
                 var mlName = names[0];
                 var enName = names.length > 1 ? "<span class='p-name-eng'>" + names[1] + "</span>" : "";
-                var tTag = "<span class='s-tag'>" + tProg.type + "</span>";
+                
+                var tTag = "";
+                if(tProg.isGroup) tTag += "<span class='s-tag' style='background:#78350f; color:#fcd34d;'>Group</span>";
+                if(tProg.cat === 'General') tTag += "<span class='s-tag' style='background:#064e3b; color:#34d399;'>Gen</span>";
                 
                 var tRes = null;
                 for(var j=0; j<state.results.length; j++) { if(state.results[j].progId === tProg.id) { tRes = state.results[j]; break; } }
@@ -598,17 +603,17 @@
                     checkPts(tRes.first, tF); checkPts(tRes.second, tS); checkPts(tRes.third, tT);
                 }
 
-                var sA1 = a1 !== "-" ? "color:#fbbf24; font-size:120%;" : "color:#334155;";
-                var sA2 = a2 !== "-" ? "color:#cbd5e1; font-size:110%;" : "color:#334155;";
-                var sA3 = a3 !== "-" ? "color:#d97706; font-size:110%;" : "color:#334155;";
-                var sB1 = b1 !== "-" ? "color:#fbbf24; font-size:120%;" : "color:#334155;";
-                var sB2 = b2 !== "-" ? "color:#cbd5e1; font-size:110%;" : "color:#334155;";
-                var sB3 = b3 !== "-" ? "color:#d97706; font-size:110%;" : "color:#334155;";
+                var sA1 = a1 !== "-" ? "color:#fbbf24; text-shadow: 0 0 1vh rgba(251,191,36,0.3);" : "color:#334155; font-weight:normal;";
+                var sA2 = a2 !== "-" ? "color:#e2e8f0;" : "color:#334155; font-weight:normal;";
+                var sA3 = a3 !== "-" ? "color:#d97706;" : "color:#334155; font-weight:normal;";
+                var sB1 = b1 !== "-" ? "color:#fbbf24; text-shadow: 0 0 1vh rgba(251,191,36,0.3);" : "color:#334155; font-weight:normal;";
+                var sB2 = b2 !== "-" ? "color:#e2e8f0;" : "color:#334155; font-weight:normal;";
+                var sB3 = b3 !== "-" ? "color:#d97706;" : "color:#334155; font-weight:normal;";
 
                 tbody += "<tr>" +
                     "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt' title='" + mlName + "'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
-                    "<td style='" + sA1 + "'>" + a1 + "</td><td style='" + sA2 + "'>" + a2 + "</td><td style='" + sA3 + "'>" + a3 + "</td>" +
-                    "<td style='border-left:0.2vh solid #334155;" + sB1 + "'>" + b1 + "</td><td style='" + sB2 + "'>" + b2 + "</td><td style='" + sB3 + "'>" + b3 + "</td>" +
+                    "<td class='pts-col border-divider' style='" + sA1 + "'>" + a1 + "</td><td class='pts-col' style='" + sA2 + "'>" + a2 + "</td><td class='pts-col' style='" + sA3 + "'>" + a3 + "</td>" +
+                    "<td class='pts-col border-divider' style='" + sB1 + "'>" + b1 + "</td><td class='pts-col' style='" + sB2 + "'>" + b2 + "</td><td class='pts-col' style='" + sB3 + "'>" + b3 + "</td>" +
                     "</tr>";
             }
             return tbody;
@@ -651,7 +656,7 @@
             document.getElementById('cat-g-a').innerText = stats.teamA.general; document.getElementById('cat-g-b').innerText = stats.teamB.general;
 
             var resHtml = "";
-            if (sortedRes.length === 0) resHtml = "<h2 style='color:#64748b; grid-column:span 2; text-align:center;'>ഫലങ്ങൾ വന്നിട്ടില്ല...</h2>";
+            if (sortedRes.length === 0) resHtml = "<h2 style='color:#64748b; grid-column:span 2; text-align:center; padding-top:10vh;'>ഫലങ്ങൾ വന്നിട്ടില്ല...</h2>";
             
             for(var r=0; r<Math.min(sortedRes.length, 5); r++) {
                 var latestRes = sortedRes[r]; var latestProg = getProg(latestRes.progId);
@@ -666,10 +671,10 @@
 
                 var c1N=getC(c1), c2N=getC(c2), c3N=getC(c3);
                 
-                resHtml += "<div class='res-card" + (r===0?" newest":"") + "'><div class='rc-title'><div class='rc-title-text'><span>" + pNames[0] + "</span></div> <span class='rc-cat'>" + (latestProg?latestProg.cat:'') + "</span></div>";
-                if(c1N!=='-') resHtml += "<div class='rc-row'><span class='rc-name'>🥇 " + c1N + "</span><span class='rc-team' style='color:#fbbf24'>" + getT(c1) + "</span></div>";
-                if(c2N!=='-') resHtml += "<div class='rc-row'><span class='rc-name'>🥈 " + c2N + "</span><span class='rc-team' style='color:#cbd5e1'>" + getT(c2) + "</span></div>";
-                if(c3N!=='-') resHtml += "<div class='rc-row'><span class='rc-name'>🥉 " + c3N + "</span><span class='rc-team' style='color:#b45309'>" + getT(c3) + "</span></div>";
+                resHtml += "<div class='res-card" + (r===0?" newest":"") + "'><div class='rc-title'><div class='rc-title-text'><span>" + pNames[0] + "</span>" + (pNames.length>1?"<span class='rc-title-eng'>"+pNames[1]+"</span>":"") + "</div> <span class='rc-cat'>" + (latestProg?latestProg.cat:'') + "</span></div>";
+                if(c1N!=='-') resHtml += "<div class='rc-row first'><span class='rc-name'>🥇 " + c1N + "</span><span class='rc-team' style='color:#fbbf24'>" + getT(c1) + "</span></div>";
+                if(c2N!=='-') resHtml += "<div class='rc-row second'><span class='rc-name'>🥈 " + c2N + "</span><span class='rc-team' style='color:#cbd5e1'>" + getT(c2) + "</span></div>";
+                if(c3N!=='-') resHtml += "<div class='rc-row third'><span class='rc-name'>🥉 " + c3N + "</span><span class='rc-team' style='color:#d97706'>" + getT(c3) + "</span></div>";
                 resHtml += "</div>";
             }
             document.getElementById('results-grid-container').innerHTML = resHtml;
