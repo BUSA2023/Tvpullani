@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>മെഹ്ഫിലെ നൂർ 2026 - TV Display (Optimized)</title>
+    <title>മെഹ്ഫിലെ നൂർ 2026 - TV Display</title>
     
     <!-- Premium Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800&family=Outfit:wght@400;800;900&display=swap" rel="stylesheet">
@@ -128,14 +128,14 @@
         .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
         .cat-pts { font-size: 5.5vh; font-weight: 900; color: #fff; text-shadow: 0 0.5vh 1vh rgba(0,0,0,0.5);}
 
-        /* --- POINT TABLES (PERFECTLY CENTERED & ALIGNED) --- */
+        /* --- POINT TABLES (PERFECTLY CENTERED & WRAPPED) --- */
         .table-container { 
             background: rgba(15, 23, 42, 0.9); border-radius: 2vh; padding: 0.5vh; 
             border: 0.1vh solid rgba(255,255,255,0.15); 
             flex: 1; display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 2vh 4vh rgba(0,0,0,0.5);
         }
-        /* Header table and Body table use table-layout: fixed for identical pixel alignment */
+        
         .pt-header-table, .pt-table { 
             width: 100%; border-collapse: collapse; table-layout: fixed; 
         }
@@ -151,31 +151,49 @@
         .pt-table tbody tr:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
         .pt-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.3); }
 
-        /* ALL table cells are perfectly centered by default */
         th, td { text-align: center; vertical-align: middle; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
         
         .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; padding: 1.5vh 0; letter-spacing: 0.1vw;}
         .pt-table td { padding: 0.8vh 1vw; font-size: 2.4vh; font-weight: bold; } 
         
-        /* Specific override just for the Program name column */
         .t-left { text-align: left !important; padding-left: 2vw !important; }
         
-        .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; overflow: hidden; }
-        .p-name-txt { font-size: 2.2vh; font-weight: bold; display: flex; flex-direction: column; line-height: 1.2; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20vw;}
-        .p-name-eng { font-size: 1.4vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; }
+        /* FIX: Program name wrapping securely */
+        .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; gap: 1vw; }
+        .p-name-txt { 
+            font-size: 2.1vh; 
+            font-weight: bold; 
+            line-height: 1.3; 
+            color: #f8fafc; 
+            white-space: normal; /* Enables multi-line wrapping */
+            word-wrap: break-word; /* Breaks extra long words if needed */
+            flex: 1; /* Takes available space */
+            text-align: left;
+        }
+        .p-name-eng { font-size: 1.4vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; display: block; }
         
-        .s-tag { font-size: 1.2vh; background: #334155; padding: 0.4vh 0.8vw; border-radius: 0.5vh; color: #e2e8f0; margin-left: 1vw; font-weight: bold; text-transform: uppercase; flex-shrink: 0; box-shadow: inset 0 0 0.5vh rgba(0,0,0,0.3);}
+        .s-tag { 
+            font-size: 1.2vh; 
+            background: #334155; 
+            padding: 0.4vh 0.8vw; 
+            border-radius: 0.5vh; 
+            color: #e2e8f0; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            flex-shrink: 0; 
+            box-shadow: inset 0 0 0.5vh rgba(0,0,0,0.3); 
+            align-self: center; 
+        }
         
         .pt-team-a { color: #fb7185; font-size: 2.8vh !important; font-weight: 900;} 
         .pt-team-b { color: #818cf8; font-size: 2.8vh !important; font-weight: 900;}
 
         .border-divider { border-left: 0.3vh solid rgba(255,255,255,0.1); }
-        .pts-col { font-size: 2.6vh !important; text-align: center !important; } /* Force strict center on points */
+        .pts-col { font-size: 2.6vh !important; text-align: center !important; } 
 
-        /* --- PAGE 7: INLINE GALLERY (TV GPU HACK FIXED) --- */
+        /* --- PAGE 7: INLINE GALLERY (STATIC HTML FIX FOR TVs) --- */
         .gallery-wrapper {
             flex: 1; display: flex; justify-content: center; align-items: center; padding: 2vh;
-            position: relative; /* Essential for absolute inner child */
         }
         #inline-gallery-container {
             width: 85vw; height: 65vh; 
@@ -184,23 +202,14 @@
             border-radius: 3vh; 
             overflow: hidden; 
             box-shadow: 0 3vh 6vh rgba(0,0,0,0.7), inset 0 0 5vh rgba(0,0,0,0.8); 
-            /* Remove Flexbox here to fix older TV Video Render Bug */
             position: relative; 
+            display: flex; justify-content: center; align-items: center;
         }
         
-        /* Specific CSS hack for Smart TVs to force hardware acceleration */
         .gallery-media {
-            position: absolute;
-            top: 0; bottom: 0; left: 0; right: 0;
-            margin: auto; /* Absolute center fallback */
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            /* Force GPU Rendering to prevent Black Screen Video */
-            transform: translateZ(0); 
-            -webkit-transform: translate3d(0,0,0);
+            width: 100%; height: 100%; 
+            object-fit: contain; 
+            background-color: transparent;
         }
 
         /* TOAST */
@@ -284,7 +293,6 @@
         </div>
 
         <!-- PAGE 4: JUNIOR TABLE -->
-        <!-- Note: Using <colgroup> guarantees mathematically perfect column alignment across header & body -->
         <div id="view-4" class="view-container">
             <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">പോയിന്റ് ടേബിൾ - ജൂനിയർ (JUNIOR)</div>
@@ -368,13 +376,15 @@
             </div>
         </div>
 
-        <!-- PAGE 7: INLINE FEST GALLERY -->
+        <!-- PAGE 7: INLINE FEST GALLERY (STATIC PLAYERS FIXED FOR SMART TVS) -->
         <div id="view-7" class="view-container">
             <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">📸 ഫെസ്റ്റ് ഗാലറി (FEST GALLERY)</div>
             <div class="gallery-wrapper">
                 <div id="inline-gallery-container">
-                    <!-- Video/Image loads here -->
+                    <!-- STATIC HTML TAGS PREVENT TV CRASHES -->
+                    <video id="gallery-video" class="gallery-media" style="display:none;" playsinline preload="metadata"></video>
+                    <img id="gallery-img" class="gallery-media" style="display:none;" alt="">
                 </div>
             </div>
         </div>
@@ -480,12 +490,13 @@
         function moveToNextView() {
             if(carouselTimer) clearTimeout(carouselTimer);
             
-            // Clean up old gallery video from TV RAM to prevent crashing
-            var galleryBox = document.getElementById('inline-gallery-container');
-            if (galleryBox.innerHTML !== '') {
-                var oldVid = galleryBox.querySelector('video');
-                if(oldVid) { oldVid.pause(); oldVid.removeAttribute('src'); oldVid.load(); }
-                galleryBox.innerHTML = '';
+            // CLEANUP TV VIDEO INSTANTLY TO SAVE RAM
+            var vidPlayer = document.getElementById('gallery-video');
+            if (vidPlayer && !vidPlayer.paused) {
+                vidPlayer.pause();
+                vidPlayer.removeAttribute('src'); 
+                vidPlayer.load(); // Forces TV browser to drop memory
+                vidPlayer.style.display = 'none';
             }
 
             currentViewIndex++;
@@ -509,37 +520,28 @@
             }
         }
 
+        // USING STATIC HTML TAGS SO TV DOES NOT CRASH
         function playInlineGalleryItem() {
-            var container = document.getElementById('inline-gallery-container');
+            var vidPlayer = document.getElementById('gallery-video');
+            var imgPlayer = document.getElementById('gallery-img');
             
             if (currentGalleryIndex >= galleryItems.length) currentGalleryIndex = 0;
             var item = galleryItems[currentGalleryIndex];
             currentGalleryIndex++; 
 
             if (item.type === 'video') {
-                var el = document.createElement('video');
-                el.src = item.url; 
-                el.className = 'gallery-media';
-                el.playsInline = true;
-                el.setAttribute('playsinline', ''); 
-                el.preload = 'metadata'; 
+                imgPlayer.style.display = 'none';
+                vidPlayer.style.display = 'block';
+                vidPlayer.src = item.url;
                 
-                // Pure JS enforced absolute centering to fight TV layout bugs
-                el.style.maxWidth = '100%';
-                el.style.maxHeight = '100%';
-                el.style.width = 'auto';
-                el.style.height = 'auto';
+                vidPlayer.onended = function() { moveToNextView(); };
+                vidPlayer.onerror = function() { moveToNextView(); };
                 
-                el.onended = function() { moveToNextView(); };
-                el.onerror = function() { moveToNextView(); };
-
-                container.appendChild(el);
-                
-                var playPromise = el.play();
+                var playPromise = vidPlayer.play();
                 if(playPromise !== undefined) {
                     playPromise.catch(function() { 
-                        el.muted = true; 
-                        var mPromise = el.play();
+                        vidPlayer.muted = true; 
+                        var mPromise = vidPlayer.play();
                         if(mPromise) mPromise.catch(function(){ moveToNextView(); });
                     });
                 }
@@ -547,10 +549,12 @@
                 carouselTimer = setTimeout(moveToNextView, 120000); 
 
             } else {
-                var el = document.createElement('img');
-                el.src = item.url;
-                el.className = 'gallery-media';
-                container.appendChild(el);
+                vidPlayer.style.display = 'none';
+                vidPlayer.pause();
+                vidPlayer.removeAttribute('src');
+                
+                imgPlayer.style.display = 'block';
+                imgPlayer.src = item.url;
                 
                 carouselTimer = setTimeout(moveToNextView, (item.duration || 10) * 1000);
             }
@@ -568,7 +572,8 @@
         var auth = firebase.auth();
         var db = firebase.firestore();
 
-        var state = { teams: { teamA: { name: 'Team A' }, teamB: { name: 'Team B' } }, programs: [], candidates: [], results: [] };
+        // CHANGED TEAM A DEFAULT NAME TO ഖവാരിസ്മി
+        var state = { teams: { teamA: { name: 'ഖവാരിസ്മി' }, teamB: { name: 'Team B' } }, programs: [], candidates: [], results: [] };
         var prevScoreA = -1; var prevScoreB = -1; var prevTotalRes = -1;
 
         var renderTimer = null;
@@ -639,9 +644,8 @@
                 var sB2 = b2 !== "-" ? "color:#e2e8f0;" : "color:#334155; font-weight:normal;";
                 var sB3 = b3 !== "-" ? "color:#d97706;" : "color:#334155; font-weight:normal;";
 
-                // Removed explicit inline widths - let <colgroup> do its perfect math
                 tbody += "<tr>" +
-                    "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt' title='" + mlName + "'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
+                    "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
                     "<td class='pts-col border-divider' style='" + sA1 + "'>" + a1 + "</td><td class='pts-col' style='" + sA2 + "'>" + a2 + "</td><td class='pts-col' style='" + sA3 + "'>" + a3 + "</td>" +
                     "<td class='pts-col border-divider' style='" + sB1 + "'>" + b1 + "</td><td class='pts-col' style='" + sB2 + "'>" + b2 + "</td><td class='pts-col' style='" + sB3 + "'>" + b3 + "</td>" +
                     "</tr>";
