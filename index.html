@@ -128,14 +128,18 @@
         .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
         .cat-pts { font-size: 5.5vh; font-weight: 900; color: #fff; text-shadow: 0 0.5vh 1vh rgba(0,0,0,0.5);}
 
-        /* --- POINT TABLES (Perfectly Arranged) --- */
+        /* --- POINT TABLES (PERFECTLY CENTERED & ALIGNED) --- */
         .table-container { 
             background: rgba(15, 23, 42, 0.9); border-radius: 2vh; padding: 0.5vh; 
             border: 0.1vh solid rgba(255,255,255,0.15); 
             flex: 1; display: flex; flex-direction: column; overflow: hidden;
             box-shadow: 0 2vh 4vh rgba(0,0,0,0.5);
         }
-        .pt-header-table { width: 100%; border-collapse: collapse; background: #0f172a; border-radius: 1.5vh 1.5vh 0 0; flex-shrink: 0; border-bottom: 0.3vh solid #334155;}
+        /* Header table and Body table use table-layout: fixed for identical pixel alignment */
+        .pt-header-table, .pt-table { 
+            width: 100%; border-collapse: collapse; table-layout: fixed; 
+        }
+        .pt-header-table { background: #0f172a; border-radius: 1.5vh 1.5vh 0 0; flex-shrink: 0; border-bottom: 0.3vh solid #334155;}
         
         .no-scroll-wrapper { 
             flex: 1; background: rgba(0,0,0,0.6); border-radius: 0 0 1.5vh 1.5vh; 
@@ -143,17 +147,18 @@
             display: flex; flex-direction: column;
         }
         
-        .pt-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
         .pt-table tbody tr { height: 1%; transition: background 0.2s; } 
-        
         .pt-table tbody tr:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
         .pt-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.3); }
 
-        th, td { text-align: center; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
-        .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; padding: 1.5vh 0; letter-spacing: 0.1vw;}
+        /* ALL table cells are perfectly centered by default */
+        th, td { text-align: center; vertical-align: middle; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
         
-        .pt-table td { padding: 0.8vh 1vw; font-size: 2.4vh; font-weight: bold; vertical-align: middle; } 
-        .t-left { text-align: left !important; padding-left: 2vw !important; vertical-align: middle;}
+        .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; padding: 1.5vh 0; letter-spacing: 0.1vw;}
+        .pt-table td { padding: 0.8vh 1vw; font-size: 2.4vh; font-weight: bold; } 
+        
+        /* Specific override just for the Program name column */
+        .t-left { text-align: left !important; padding-left: 2vw !important; }
         
         .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; overflow: hidden; }
         .p-name-txt { font-size: 2.2vh; font-weight: bold; display: flex; flex-direction: column; line-height: 1.2; color: #f8fafc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 20vw;}
@@ -165,24 +170,37 @@
         .pt-team-b { color: #818cf8; font-size: 2.8vh !important; font-weight: 900;}
 
         .border-divider { border-left: 0.3vh solid rgba(255,255,255,0.1); }
-        .pts-col { font-size: 2.6vh !important; }
+        .pts-col { font-size: 2.6vh !important; text-align: center !important; } /* Force strict center on points */
 
-        /* --- PAGE 7: INLINE GALLERY (NEW) --- */
+        /* --- PAGE 7: INLINE GALLERY (TV GPU HACK FIXED) --- */
         .gallery-wrapper {
             flex: 1; display: flex; justify-content: center; align-items: center; padding: 2vh;
+            position: relative; /* Essential for absolute inner child */
         }
         #inline-gallery-container {
-            width: 80vw; height: 60vh; 
+            width: 85vw; height: 65vh; 
             background: #000; 
             border: 0.5vh solid rgba(255,255,255,0.15); 
             border-radius: 3vh; 
             overflow: hidden; 
             box-shadow: 0 3vh 6vh rgba(0,0,0,0.7), inset 0 0 5vh rgba(0,0,0,0.8); 
+            /* Remove Flexbox here to fix older TV Video Render Bug */
             position: relative; 
-            display: flex; justify-content: center; align-items: center;
         }
+        
+        /* Specific CSS hack for Smart TVs to force hardware acceleration */
         .gallery-media {
-            width: 100%; height: 100%; object-fit: contain; background-color: transparent;
+            position: absolute;
+            top: 0; bottom: 0; left: 0; right: 0;
+            margin: auto; /* Absolute center fallback */
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            /* Force GPU Rendering to prevent Black Screen Video */
+            transform: translateZ(0); 
+            -webkit-transform: translate3d(0,0,0);
         }
 
         /* TOAST */
@@ -266,24 +284,31 @@
         </div>
 
         <!-- PAGE 4: JUNIOR TABLE -->
+        <!-- Note: Using <colgroup> guarantees mathematically perfect column alignment across header & body -->
         <div id="view-4" class="view-container">
             <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
             <div class="page-title">പോയിന്റ് ടേബിൾ - ജൂനിയർ (JUNIOR)</div>
             <div class="table-container">
                 <table class="pt-header-table">
+                    <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 34%;">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a border-divider" style="width: 33%;" id="th-teamA-4">Team A</th>
-                            <th colspan="3" class="pt-team-b border-divider" style="width: 33%;" id="th-teamB-4">Team B</th>
+                            <th rowspan="2" class="t-left">മത്സരം (Program)</th>
+                            <th colspan="3" class="pt-team-a border-divider" id="th-teamA-4">Team A</th>
+                            <th colspan="3" class="pt-team-b border-divider" id="th-teamB-4">Team B</th>
                         </tr>
                         <tr>
-                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
-                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
+                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
+                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
                         </tr>
                     </thead>
                 </table>
-                <div class="no-scroll-wrapper"><table class="pt-table"><tbody id="table-body-junior"></tbody></table></div>
+                <div class="no-scroll-wrapper">
+                    <table class="pt-table">
+                        <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
+                        <tbody id="table-body-junior"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -293,19 +318,25 @@
             <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (STAGE)</div>
             <div class="table-container">
                 <table class="pt-header-table">
+                    <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 34%;">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a border-divider" style="width: 33%;" id="th-teamA-5">Team A</th>
-                            <th colspan="3" class="pt-team-b border-divider" style="width: 33%;" id="th-teamB-5">Team B</th>
+                            <th rowspan="2" class="t-left">മത്സരം (Program)</th>
+                            <th colspan="3" class="pt-team-a border-divider" id="th-teamA-5">Team A</th>
+                            <th colspan="3" class="pt-team-b border-divider" id="th-teamB-5">Team B</th>
                         </tr>
                         <tr>
-                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
-                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
+                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
+                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
                         </tr>
                     </thead>
                 </table>
-                <div class="no-scroll-wrapper"><table class="pt-table"><tbody id="table-body-senior-stage"></tbody></table></div>
+                <div class="no-scroll-wrapper">
+                    <table class="pt-table">
+                        <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
+                        <tbody id="table-body-senior-stage"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -315,19 +346,25 @@
             <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (NON-STAGE)</div>
             <div class="table-container">
                 <table class="pt-header-table">
+                    <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
                     <thead>
                         <tr>
-                            <th rowspan="2" class="t-left" style="width: 34%;">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a border-divider" style="width: 33%;" id="th-teamA-6">Team A</th>
-                            <th colspan="3" class="pt-team-b border-divider" style="width: 33%;" id="th-teamB-6">Team B</th>
+                            <th rowspan="2" class="t-left">മത്സരം (Program)</th>
+                            <th colspan="3" class="pt-team-a border-divider" id="th-teamA-6">Team A</th>
+                            <th colspan="3" class="pt-team-b border-divider" id="th-teamB-6">Team B</th>
                         </tr>
                         <tr>
-                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
-                            <th class="border-divider" style="width: 11%;">🥇 1st</th><th style="width: 11%;">🥈 2nd</th><th style="width: 11%;">🥉 3rd</th>
+                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
+                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
                         </tr>
                     </thead>
                 </table>
-                <div class="no-scroll-wrapper"><table class="pt-table"><tbody id="table-body-senior-nonstage"></tbody></table></div>
+                <div class="no-scroll-wrapper">
+                    <table class="pt-table">
+                        <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
+                        <tbody id="table-body-senior-nonstage"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
@@ -392,7 +429,6 @@
             document.getElementById('start-overlay').style.display = 'none';
             document.getElementById('app').style.display = 'block';
             
-            // Prime Audio
             var a1 = document.getElementById('sound-score');
             var a2 = document.getElementById('sound-result');
             if(a1) { a1.muted=true; a1.play().then(function(){a1.pause();a1.muted=false;}).catch(function(){}); }
@@ -420,8 +456,7 @@
             try { confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] }); } catch(e) {}
             showToast("🔥 പുതിയ റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു! 🔥");
             
-            // Instantly jump to Results View
-            currentViewIndex = 1; // set to 1 because moveToNextView will ++ it to 2
+            currentViewIndex = 1; 
             moveToNextView();
         }
 
@@ -430,25 +465,22 @@
             setTimeout(function(){ t.className = ''; }, 5000);
         }
 
-        // ==========================================
-        // UNIFIED TV CAROUSEL & INLINE GALLERY LOGIC
-        // ==========================================
         var galleryItems = []; 
         var currentGalleryIndex = 0;
         
         var currentViewIndex = 1;
         var carouselTimer = null;
-        var totalViews = 7; // Total number of pages including Gallery
+        var totalViews = 7; 
 
         function startCarousel() {
             if(carouselTimer) clearTimeout(carouselTimer);
-            carouselTimer = setTimeout(moveToNextView, 15000); // 15 seconds per page
+            carouselTimer = setTimeout(moveToNextView, 15000); // 15s delay
         }
 
         function moveToNextView() {
             if(carouselTimer) clearTimeout(carouselTimer);
             
-            // AGGRESSIVE RAM CLEANUP: Destroy video if we are leaving the Gallery View
+            // Clean up old gallery video from TV RAM to prevent crashing
             var galleryBox = document.getElementById('inline-gallery-container');
             if (galleryBox.innerHTML !== '') {
                 var oldVid = galleryBox.querySelector('video');
@@ -458,24 +490,22 @@
 
             currentViewIndex++;
             
-            // Skip Gallery View (Page 7) if there are no photos/videos uploaded
+            // Skip page 7 if no gallery items
             if (currentViewIndex === 7 && (!galleryItems || galleryItems.length === 0)) {
                 currentViewIndex = 1; 
             } else if (currentViewIndex > totalViews) {
-                currentViewIndex = 1; // Loop back to Page 1
+                currentViewIndex = 1; 
             }
 
-            // Hide all, Show Current
             for(var i=1; i<=totalViews; i++) {
                 document.getElementById('view-' + i).className = 'view-container';
             }
             document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
 
-            // If it is Gallery View, handle media loading
             if (currentViewIndex === 7) {
                 playInlineGalleryItem();
             } else {
-                startCarousel(); // Normal 15s wait
+                startCarousel(); 
             }
         }
 
@@ -492,9 +522,14 @@
                 el.className = 'gallery-media';
                 el.playsInline = true;
                 el.setAttribute('playsinline', ''); 
-                el.preload = 'metadata'; // Saves Network Bandwidth
+                el.preload = 'metadata'; 
                 
-                // When Video finishes, move to Next View automatically
+                // Pure JS enforced absolute centering to fight TV layout bugs
+                el.style.maxWidth = '100%';
+                el.style.maxHeight = '100%';
+                el.style.width = 'auto';
+                el.style.height = 'auto';
+                
                 el.onended = function() { moveToNextView(); };
                 el.onerror = function() { moveToNextView(); };
 
@@ -503,30 +538,24 @@
                 var playPromise = el.play();
                 if(playPromise !== undefined) {
                     playPromise.catch(function() { 
-                        el.muted = true; // Fallback for strict TV browsers
+                        el.muted = true; 
                         var mPromise = el.play();
                         if(mPromise) mPromise.catch(function(){ moveToNextView(); });
                     });
                 }
                 
-                // Safety net: If video hangs for 2 minutes, force next slide
                 carouselTimer = setTimeout(moveToNextView, 120000); 
 
             } else {
-                // It's an Image
                 var el = document.createElement('img');
                 el.src = item.url;
                 el.className = 'gallery-media';
                 container.appendChild(el);
                 
-                // Wait item.duration (default 10s) then go to next slide
                 carouselTimer = setTimeout(moveToNextView, (item.duration || 10) * 1000);
             }
         }
 
-        // ==========================================
-        // FIREBASE & DATA RENDERING
-        // ==========================================
         var firebaseConfig = {
             apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
             authDomain: "pullani-6a39b.firebaseapp.com",
@@ -610,6 +639,7 @@
                 var sB2 = b2 !== "-" ? "color:#e2e8f0;" : "color:#334155; font-weight:normal;";
                 var sB3 = b3 !== "-" ? "color:#d97706;" : "color:#334155; font-weight:normal;";
 
+                // Removed explicit inline widths - let <colgroup> do its perfect math
                 tbody += "<tr>" +
                     "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt' title='" + mlName + "'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
                     "<td class='pts-col border-divider' style='" + sA1 + "'>" + a1 + "</td><td class='pts-col' style='" + sA2 + "'>" + a2 + "</td><td class='pts-col' style='" + sA3 + "'>" + a3 + "</td>" +
