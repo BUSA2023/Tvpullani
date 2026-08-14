@@ -1,731 +1,621 @@
-<!DOCTYPE html>
-<html lang="ml">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>മെഹ്ഫിലെ നൂർ 2026 - TV Display</title>
+<!-- Premium Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800&family=Outfit:wght@400;800;900&display=swap" rel="stylesheet">
+
+<!-- Firebase & Confetti -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+    /* ========================================================
+       TV OPTIMIZED CSS (16:9 Aspect Ratio Focus using vh/vw)
+       ======================================================== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+        font-family: 'Anek Malayalam', sans-serif; 
+        background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+        color: #ffffff; 
+        overflow: hidden; 
+        height: 100vh; width: 100vw;
+    }
+    .num-font { font-family: 'Outfit', sans-serif; }
+
+    /* ZERO GRAVITY BACKGROUND EFFECT (REDUCED TO 4 ORBS FOR RAM) */
+    .zero-gravity-bg {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        z-index: -1; overflow: hidden; pointer-events: none;
+    }
+    .orb {
+        position: absolute; border-radius: 50%;
+        animation: pulseOrb infinite ease-in-out;
+    }
+    @keyframes pulseOrb {
+        0% { opacity: 0.05; }
+        50% { opacity: 0.15; }
+        100% { opacity: 0.05; }
+    }
+
+    /* OVERLAYS */
+    #start-overlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: rgba(0,0,0,0.95); z-index: 9999;
+        display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer;
+    }
+    .start-btn { background: #ec4899; color: white; padding: 3vh 4vw; font-size: 4vh; font-weight: bold; border-radius: 2vh; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 3vh rgba(236,72,153,0.5); transition: 0.3s;}
     
-    <!-- Premium Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800&family=Outfit:wght@400;800;900&display=swap" rel="stylesheet">
+    /* MAIN VIEW CONTAINER */
+    .view-container {
+        position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+        display: none; flex-direction: column;
+        padding: 4vh 4vw; 
+        animation: fadeIn 0.8s ease-in-out; 
+        overflow: hidden;
+    }
+    .view-active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+    /* HEADER & TITLE */
+    .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
+    .fest-logo-img { height: 9vh; max-height: 80px; object-fit: contain; }
     
-    <!-- Firebase & Confetti -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    .page-title { 
+        text-align: center; font-size: 3vh; color: #fbbf24; margin-bottom: 2vh; 
+        font-weight: bold; background: rgba(0,0,0,0.4); padding: 1vh; 
+        border-radius: 2vh; text-transform: uppercase; letter-spacing: 0.2vw;
+        flex-shrink: 0;
+    }
+
+    /* --- PAGE 1: TOTAL SCORE --- */
+    .dashboard-content { display: flex; justify-content: space-around; align-items: center; flex: 1; padding: 0 4vw; min-height: 0; }
+    .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); }
+    .team-name { font-size: 6vh; font-weight: bold; margin-bottom: 1vh; }
+    .team-name.team-a { color: #fb7185; }
+    .team-name.team-b { color: #818cf8; }
+    .huge-points { font-size: 24vh; font-weight: 900; line-height: 1; }
+    .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; }
+
+    .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
+    .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
+    .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; }
+    .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
+
+    /* --- PAGE 2: LATEST RESULTS --- */
+    .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; }
+    .res-card { background: rgba(15,23,42,0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh; display: flex; flex-direction: column; justify-content: center; }
+    .res-card.newest { grid-column: span 2; border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; position: relative; }
     
-    <style>
-        /* ========================================================
-           TV OPTIMIZED CSS (Premium Layout & High Performance)
-           ======================================================== */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { 
-            font-family: 'Anek Malayalam', sans-serif; 
-            background: #020617; 
-            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-            color: #ffffff; 
-            overflow: hidden; 
-            height: 100vh; width: 100vw;
-            transform: translateZ(0); 
-            backface-visibility: hidden;
-        }
-        .num-font { font-family: 'Outfit', sans-serif; }
+    .corner-ribbon { width: 15vh; height: 15vh; overflow: hidden; position: absolute; top: 0; right: 0; z-index: 10; border-radius: 0 2vh 0 0; }
+    .corner-ribbon::before { content: '✨ LATEST'; position: absolute; display: block; width: 22vh; padding: 1vh 0; background: linear-gradient(90deg, #fbbf24, #f59e0b); box-shadow: 0 1vh 2vh rgba(0,0,0,0.4); color: #78350f; font-weight: 900; font-size: 1.5vh; text-align: center; right: -5vh; top: 3vh; transform: rotate(45deg); }
 
-        /* ZERO GRAVITY BACKGROUND EFFECT */
-        .zero-gravity-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1; overflow: hidden; pointer-events: none;
-        }
-        .orb {
-            position: absolute; border-radius: 50%;
-            will-change: opacity; 
-            animation: pulseOrb infinite ease-in-out;
-        }
-        @keyframes pulseOrb {
-            0% { opacity: 0.05; }
-            50% { opacity: 0.15; }
-            100% { opacity: 0.05; }
-        }
+    .rc-title { font-weight: bold; color: #fff; border-bottom: 0.1vh solid rgba(255,255,255,0.1); padding-bottom: 1vh; margin-bottom: 1.5vh; display: flex; justify-content: space-between; align-items: center;}
+    .rc-title-text { display: flex; flex-direction: column; }
+    .rc-title-text span { font-size: 2.8vh; }
+    .rc-title-eng { font-size: 1.5vh; color: #94a3b8; font-weight: normal; margin-top: 0.5vh; }
+    .rc-cat { font-size: 1.5vh; background: #1e293b; padding: 0.5vh 1vw; border-radius: 1vh; color: #94a3b8; font-weight: bold; text-transform: uppercase;}
+    
+    .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 1vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; }
+    .rc-name { font-size: 2.5vh; font-weight: bold; color: #f1f5f9; }
+    .rc-team { font-size: 1.5vh; font-weight: bold; padding: 0.5vh 1vw; border-radius: 0.8vh; background: rgba(255,255,255,0.1); }
+    .rc-team.a { color: #fb7185; } .rc-team.b { color: #818cf8; }
 
-        /* OVERLAYS */
-        #start-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #020617; z-index: 9999;
-            display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer;
-        }
-        .start-btn { background: #ec4899; color: white; padding: 3vh 4vw; font-size: 4vh; font-weight: bold; border-radius: 2vh; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 3vh rgba(236,72,153,0.5); transition: 0.3s;}
-        .start-btn:hover { transform: scale(1.05); }
+    /* --- PAGE 3: CATEGORY SCORES --- */
+    .category-container { display: flex; justify-content: space-between; gap: 3vw; flex: 1; align-items: center; min-height: 0;}
+    .cat-box { flex: 1; background: rgba(15,23,42,0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 3vh; padding: 5vh 3vw; text-align: center; }
+    .cat-title { font-size: 4vh; font-weight: bold; color: #fbbf24; margin-bottom: 4vh; text-transform: uppercase; border-bottom: 0.2vh solid rgba(255,255,255,0.1); padding-bottom: 1.5vh;}
+    .cat-team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh; background: rgba(0,0,0,0.3); padding: 2vh 3vw; border-radius: 2vh; }
+    .cat-tname { font-size: 3vh; font-weight: bold; }
+    .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
+    .cat-pts { font-size: 5vh; font-weight: 900; color: #fff; }
 
-        /* MAIN VIEW CONTAINER */
-        .view-container {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-            display: none; flex-direction: column;
-            padding: 4vh 4vw; 
-            animation: fadeIn 0.5s ease-out; 
-            overflow: hidden;
-        }
-        .view-active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    /* --- POINT TABLES --- */
+    .table-container { background: rgba(15, 23, 42, 0.8); border-radius: 2vh; padding: 1vh; border: 0.1vh solid rgba(255,255,255,0.1); flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .pt-header-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.8); border-radius: 1vh 1vh 0 0; flex-shrink: 0; table-layout: fixed; }
+    .no-scroll-wrapper { flex: 1; background: rgba(0,0,0,0.4); border-radius: 0 0 1vh 1vh; overflow: hidden; display: flex; flex-direction: column; }
+    .pt-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+    .pt-table tbody tr { height: 1%; } 
+    th, td { text-align: center; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
+    .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; border-bottom: 0.2vh solid #334155; padding: 1vh;}
+    .pt-table td { padding: 0.2vh 1vw; font-size: 2.2vh; font-weight: bold; }
+    .t-left { text-align: left !important; padding-left: 2vw !important; vertical-align: middle;}
+    
+    .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; }
+    .p-name-txt { font-size: 2.2vh; font-weight: bold; display: flex; flex-direction: column; line-height: 1.1; color: #f1f5f9; }
+    .p-name-eng { font-size: 1.4vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; }
+    
+    .s-tag { font-size: 1.2vh; background: #334155; padding: 0.4vh 0.6vw; border-radius: 0.5vh; color: #cbd5e1; margin-left: 1vw; font-weight: bold; text-transform: uppercase; flex-shrink: 0;}
+    .s-grp { background: #78350f; color: #fcd34d; }
+    .s-gen { background: #064e3b; color: #34d399; }
+    
+    .pt-team-a { color: #fb7185; font-size: 2.5vh !important; } 
+    .pt-team-b { color: #818cf8; font-size: 2.5vh !important; }
+    .br-left { border-left: 0.2vh solid #334155; }
 
-        /* HEADER & TITLE */
-        .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
-        .fest-logo-img { height: 9vh; max-height: 80px; object-fit: contain; }
-        
-        .page-title { 
-            text-align: center; font-size: 3vh; color: #fbbf24; margin-bottom: 2vh; 
-            font-weight: bold; background: rgba(0,0,0,0.4); padding: 1vh; 
-            border-radius: 2vh; text-transform: uppercase; letter-spacing: 0.2vw;
-            flex-shrink: 0;
-            border-bottom: 0.3vh solid rgba(251, 191, 36, 0.3);
-        }
+    /* TOAST */
+    #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s; z-index: 10000; }
+    #toast.show { transform: translateY(0); }
 
-        /* --- PAGE 1: TOTAL SCORE --- */
-        .dashboard-content { display: flex; justify-content: space-around; align-items: center; flex: 1; padding: 0 4vw; min-height: 0; }
-        .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); box-shadow: 0 2vh 4vh rgba(0,0,0,0.5); }
-        .team-name { font-size: 6vh; font-weight: bold; margin-bottom: 1vh; }
-        .team-name.team-a { color: #fb7185; }
-        .team-name.team-b { color: #818cf8; }
-        .huge-points { font-size: 24vh; font-weight: 900; line-height: 1; }
-        
-        .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; box-shadow: inset 0 0 2vh rgba(0,0,0,0.8); }
+    /* --- RAM-FRIENDLY FULL SCREEN GALLERY OVERLAY (IMAGE ONLY) --- */
+    #gallery-overlay {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #000; z-index: 9500; display: none; opacity: 0;
+        transition: opacity 1s ease-in-out;
+    }
+    .gallery-media {
+        position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
+        object-fit: contain; background-color: #000; display: none;
+    }
+    .gallery-media.active { display: block; }
 
-        .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
-        .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; }
-        .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; }
-        .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
+    .gallery-badge {
+        position: absolute; bottom: 6vh; right: 4vw;
+        background: rgba(0,0,0,0.8); color: #fff; padding: 2vh 3vw;
+        border-radius: 2vh; font-size: 3vh; font-weight: bold;
+        border: 0.2vh solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+        display: flex; align-items: center; gap: 2vw; z-index: 100;
+    }
+</style>
 
-        /* --- PAGE 2: LATEST RESULTS --- */
-        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; align-content: start; }
-        .res-card { background: rgba(15,23,42,0.9); border: 0.2vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh; position: relative; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 1vh 2vh rgba(0,0,0,0.3); }
-        
-        .res-card.newest { grid-column: span 2; border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.15) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; border-width: 0.3vh; }
-        .res-card.newest .rc-title-text span { font-size: 4vh; color: #10b981;}
-        .res-card.newest .rc-title-eng { font-size: 2vh; }
-        .res-card.newest .rc-cat { font-size: 2vh; padding: 0.8vh 1.5vw; background: #064e3b; color: #34d399; border-radius: 1vh;}
-        .res-card.newest .rc-name { font-size: 3vh; }
-        .res-card.newest .rc-team { font-size: 2vh; padding: 0.5vh 1vw; }
+<!-- AUDIO FILES -->
+<audio id="sound-score" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
+<audio id="sound-result" src="mixkit-sci-fi-reject-notification-896%20(2).wav" preload="auto"></audio>
 
-        .rc-title { font-weight: bold; color: #fff; border-bottom: 0.1vh solid rgba(255,255,255,0.1); padding-bottom: 1.5vh; margin-bottom: 1.5vh; display: flex; justify-content: space-between; align-items: center;}
-        .rc-title-text { display: flex; flex-direction: column; }
-        .rc-title-text span { font-size: 2.8vh; }
-        .rc-title-eng { font-size: 1.6vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; }
-        
-        .rc-cat { font-size: 1.5vh; background: #1e293b; padding: 0.5vh 1vw; border-radius: 0.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase;}
-        .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 1.2vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; border-left: 0.5vh solid transparent;}
-        .rc-row.first { border-left-color: #fbbf24; }
-        .rc-row.second { border-left-color: #cbd5e1; }
-        .rc-row.third { border-left-color: #d97706; }
-        
-        .rc-name { font-size: 2.2vh; font-weight: bold; color: #f1f5f9; display: flex; align-items: center; gap: 1vw;}
-        .rc-team { font-size: 1.6vh; font-weight: bold; padding: 0.5vh 1vw; border-radius: 0.8vh; background: rgba(255,255,255,0.05); text-transform: uppercase; letter-spacing: 0.1vw;}
+<div class="zero-gravity-bg" id="zg-bg"></div>
 
-        /* --- PAGE 3: CATEGORY SCORES --- */
-        .category-container { display: flex; justify-content: space-between; gap: 3vw; flex: 1; align-items: center; min-height: 0;}
-        .cat-box { flex: 1; background: rgba(15,23,42,0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 3vh; padding: 5vh 3vw; text-align: center; box-shadow: 0 1vh 3vh rgba(0,0,0,0.4);}
-        .cat-title { font-size: 4vh; font-weight: bold; color: #fbbf24; margin-bottom: 4vh; text-transform: uppercase; border-bottom: 0.2vh solid rgba(255,255,255,0.1); padding-bottom: 1.5vh;}
-        .cat-team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh; background: rgba(0,0,0,0.3); padding: 2.5vh 3vw; border-radius: 2vh; }
-        .cat-tname { font-size: 3vh; font-weight: bold; }
-        .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
-        .cat-pts { font-size: 5.5vh; font-weight: 900; color: #fff; text-shadow: 0 0.5vh 1vh rgba(0,0,0,0.5);}
+<!-- START SCREEN -->
+<div id="start-overlay" onclick="startApp()">
+    <button class="start-btn">Start Live TV Display</button>
+    <p style="margin-top:2vh; font-size:2vh; color:#fb7185; font-weight:bold;">Optimized for 2GB RAM TV - Images Only - Anti-Sleep Active</p>
+</div>
 
-        /* --- POINT TABLES (PERFECTLY CENTERED & WRAPPED) --- */
-        .table-container { 
-            background: rgba(15, 23, 42, 0.9); border-radius: 2vh; padding: 0.5vh; 
-            border: 0.1vh solid rgba(255,255,255,0.15); 
-            flex: 1; display: flex; flex-direction: column; overflow: hidden;
-            box-shadow: 0 2vh 4vh rgba(0,0,0,0.5);
-        }
-        
-        .pt-header-table, .pt-table { 
-            width: 100%; border-collapse: collapse; table-layout: fixed; 
-        }
-        .pt-header-table { background: #0f172a; border-radius: 1.5vh 1.5vh 0 0; flex-shrink: 0; border-bottom: 0.3vh solid #334155;}
-        
-        .no-scroll-wrapper { 
-            flex: 1; background: rgba(0,0,0,0.6); border-radius: 0 0 1.5vh 1.5vh; 
-            overflow: hidden; 
-            display: flex; flex-direction: column;
-        }
-        
-        .pt-table tbody tr { height: 1%; transition: background 0.2s; } 
-        .pt-table tbody tr:nth-child(odd) { background: rgba(255, 255, 255, 0.02); }
-        .pt-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.3); }
-
-        th, td { text-align: center; vertical-align: middle; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
-        
-        .pt-header-table th { color: #94a3b8; text-transform: uppercase; font-size: 1.8vh; padding: 1.5vh 0; letter-spacing: 0.1vw;}
-        .pt-table td { padding: 0.8vh 1vw; font-size: 2.4vh; font-weight: bold; } 
-        
-        .t-left { text-align: left !important; padding-left: 2vw !important; }
-        
-        /* FIX: Program name wrapping securely */
-        .prog-name-wrapper { display: flex; align-items: center; justify-content: flex-start; width: 100%; gap: 1vw; }
-        .p-name-txt { 
-            font-size: 2.1vh; 
-            font-weight: bold; 
-            line-height: 1.3; 
-            color: #f8fafc; 
-            white-space: normal; /* Enables multi-line wrapping */
-            word-wrap: break-word; /* Breaks extra long words if needed */
-            flex: 1; /* Takes available space */
-            text-align: left;
-        }
-        .p-name-eng { font-size: 1.4vh; color: #94a3b8; font-weight: normal; margin-top: 0.2vh; display: block; }
-        
-        .s-tag { 
-            font-size: 1.2vh; 
-            background: #334155; 
-            padding: 0.4vh 0.8vw; 
-            border-radius: 0.5vh; 
-            color: #e2e8f0; 
-            font-weight: bold; 
-            text-transform: uppercase; 
-            flex-shrink: 0; 
-            box-shadow: inset 0 0 0.5vh rgba(0,0,0,0.3); 
-            align-self: center; 
-        }
-        
-        .pt-team-a { color: #fb7185; font-size: 2.8vh !important; font-weight: 900;} 
-        .pt-team-b { color: #818cf8; font-size: 2.8vh !important; font-weight: 900;}
-
-        .border-divider { border-left: 0.3vh solid rgba(255,255,255,0.1); }
-        .pts-col { font-size: 2.6vh !important; text-align: center !important; } 
-
-        /* --- PAGE 7: INLINE GALLERY (STATIC HTML FIX FOR TVs) --- */
-        .gallery-wrapper {
-            flex: 1; display: flex; justify-content: center; align-items: center; padding: 2vh;
-        }
-        #inline-gallery-container {
-            width: 85vw; height: 65vh; 
-            background: #000; 
-            border: 0.5vh solid rgba(255,255,255,0.15); 
-            border-radius: 3vh; 
-            overflow: hidden; 
-            box-shadow: 0 3vh 6vh rgba(0,0,0,0.7), inset 0 0 5vh rgba(0,0,0,0.8); 
-            position: relative; 
-            display: flex; justify-content: center; align-items: center;
-        }
-        
-        .gallery-media {
-            width: 100%; height: 100%; 
-            object-fit: contain; 
-            background-color: transparent;
-        }
-
-        /* TOAST */
-        #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 10000; box-shadow: 0 1vh 3vh rgba(0,0,0,0.5); border: 0.2vh solid #34d399;}
-        #toast.show { transform: translateY(0); }
-
-    </style>
-</head>
-<body>
-
-    <!-- AUDIO FILES -->
-    <audio id="sound-score" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
-    <audio id="sound-result" src="mixkit-sci-fi-reject-notification-896%20(2).wav" preload="auto"></audio>
-
-    <div class="zero-gravity-bg" id="zg-bg"></div>
-
-    <!-- START SCREEN -->
-    <div id="start-overlay" onclick="startApp()">
-        <button class="start-btn">Start Live TV Display</button>
-        <p style="margin-top:4vh; font-size:2.5vh; color:#94a3b8; text-align:center;">ടിവി റിമോട്ടിലെ ഓക്കേ (OK) ബട്ടൺ അമർത്തുക</p>
-        <p style="margin-top:2vh; font-size:2vh; color:#fb7185; text-align:center; font-weight:bold;">ടിവി തനിയെ ഓഫ് ആവാതിരിക്കാൻ Settings ൽ പോയി 'Auto Power Off' OFF ചെയ്യുക.</p>
+<!-- RAM-FRIENDLY FEST GALLERY (IMAGE ONLY) -->
+<div id="gallery-overlay">
+    <!-- ONLY ONE IMAGE TAG EXISTS TO PREVENT CRASHES -->
+    <img id="tv-img-player" class="gallery-media" src="" alt="Gallery Image">
+    
+    <div class="gallery-badge">
+        <span style="font-size:4vh;">📸</span> 
+        <div>
+            <div style="font-size: 1.5vh; color: #fbbf24; text-transform: uppercase;">Fest Gallery</div>
+            <div style="font-size: 2.5vh; line-height: 1;">മെഹ്ഫിലെ നൂർ 2026</div>
+        </div>
     </div>
+</div>
 
-    <div id="toast">പുതിയ അപ്ഡേറ്റ്!</div>
+<div id="toast">പുതിയ അപ്ഡേറ്റ്!</div>
 
-    <div id="app" style="display:none; width: 100%; height: 100%; position: relative;">
-        <!-- PAGE 1: SCORE & STATS -->
-        <div id="view-1" class="view-container view-active">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">ടീം പോയിന്റുകൾ (TOTAL SCORE)</div>
-            <div class="dashboard-content">
-                <div class="team-block">
-                    <div class="team-name team-a" id="name-teamA-1">Team A</div>
-                    <div class="huge-points num-font" id="score-teamA">0</div>
-                </div>
-                <div class="vs-circle">VS</div>
-                <div class="team-block">
-                    <div class="team-name team-b" id="name-teamB-1">Team B</div>
-                    <div class="huge-points num-font" id="score-teamB">0</div>
-                </div>
-            </div>
-            <div class="stats-row">
-                <div class="stat-box"><div class="stat-value num-font" id="stat-programs">0</div><div class="stat-label">മത്സരങ്ങൾ</div></div>
-                <div class="stat-box"><div class="stat-value num-font" id="stat-candidates">0</div><div class="stat-label">കുട്ടികൾ</div></div>
-                <div class="stat-box"><div class="stat-value num-font" id="stat-teams">2</div><div class="stat-label">ടീമുകൾ</div></div>
-                <div class="stat-box">
-                    <div style="font-size: 2.5vh; color: #fbbf24; font-weight: bold; line-height: 1.2;">മദ്രസ ഹാൾ</div>
-                    <div class="stat-label">വേദി</div>
-                </div>
-            </div>
+<div id="app" style="display:none; width: 100%; height: 100%; position: relative;">
+    
+    <!-- PAGE 1: SCORE & STATS -->
+    <div id="view-1" class="view-container view-active">
+        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026"></div>
+        <div class="page-title">ടീം പോയിന്റുകൾ (TOTAL SCORE)</div>
+        <div class="dashboard-content">
+            <div class="team-block"><div class="team-name team-a" id="name-teamA-1">Team A</div><div class="huge-points num-font" id="score-teamA">0</div></div>
+            <div class="vs-circle">VS</div>
+            <div class="team-block"><div class="team-name team-b" id="name-teamB-1">Team B</div><div class="huge-points num-font" id="score-teamB">0</div></div>
         </div>
-
-        <!-- PAGE 2: LATEST RESULTS -->
-        <div id="view-2" class="view-container">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">ഏറ്റവും പുതിയ ഫലങ്ങൾ (LATEST RESULTS)</div>
-            <div class="results-grid" id="results-grid-container"></div>
-        </div>
-
-        <!-- PAGE 3: CATEGORY SCORES -->
-        <div id="view-3" class="view-container">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">വിഭാഗം തിരിച്ചുള്ള പോയിന്റുകൾ</div>
-            <div class="category-container">
-                <div class="cat-box">
-                    <div class="cat-title">ജൂനിയർ (Junior)</div>
-                    <div class="cat-team-row"><span class="cat-tname a" id="name-teamA-2">Team A</span><span class="cat-pts num-font" id="cat-j-a">0</span></div>
-                    <div class="cat-team-row"><span class="cat-tname b" id="name-teamB-2">Team B</span><span class="cat-pts num-font" id="cat-j-b">0</span></div>
-                </div>
-                <div class="cat-box">
-                    <div class="cat-title">സീനിയർ (Senior)</div>
-                    <div class="cat-team-row"><span class="cat-tname a" id="name-teamA-3">Team A</span><span class="cat-pts num-font" id="cat-s-a">0</span></div>
-                    <div class="cat-team-row"><span class="cat-tname b" id="name-teamB-3">Team B</span><span class="cat-pts num-font" id="cat-s-b">0</span></div>
-                </div>
-                <div class="cat-box">
-                    <div class="cat-title">ജനറൽ (General)</div>
-                    <div class="cat-team-row"><span class="cat-tname a" id="name-teamA-4">Team A</span><span class="cat-pts num-font" id="cat-g-a">0</span></div>
-                    <div class="cat-team-row"><span class="cat-tname b" id="name-teamB-4">Team B</span><span class="cat-pts num-font" id="cat-g-b">0</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAGE 4: JUNIOR TABLE -->
-        <div id="view-4" class="view-container">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">പോയിന്റ് ടേബിൾ - ജൂനിയർ (JUNIOR)</div>
-            <div class="table-container">
-                <table class="pt-header-table">
-                    <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
-                    <thead>
-                        <tr>
-                            <th rowspan="2" class="t-left">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a border-divider" id="th-teamA-4">Team A</th>
-                            <th colspan="3" class="pt-team-b border-divider" id="th-teamB-4">Team B</th>
-                        </tr>
-                        <tr>
-                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
-                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="no-scroll-wrapper">
-                    <table class="pt-table">
-                        <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
-                        <tbody id="table-body-junior"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAGE 5: SENIOR + GENERAL (STAGE) -->
-        <div id="view-5" class="view-container">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (STAGE)</div>
-            <div class="table-container">
-                <table class="pt-header-table">
-                    <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
-                    <thead>
-                        <tr>
-                            <th rowspan="2" class="t-left">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a border-divider" id="th-teamA-5">Team A</th>
-                            <th colspan="3" class="pt-team-b border-divider" id="th-teamB-5">Team B</th>
-                        </tr>
-                        <tr>
-                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
-                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="no-scroll-wrapper">
-                    <table class="pt-table">
-                        <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
-                        <tbody id="table-body-senior-stage"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAGE 6: SENIOR + GENERAL (NON-STAGE) -->
-        <div id="view-6" class="view-container">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (NON-STAGE)</div>
-            <div class="table-container">
-                <table class="pt-header-table">
-                    <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
-                    <thead>
-                        <tr>
-                            <th rowspan="2" class="t-left">മത്സരം (Program)</th>
-                            <th colspan="3" class="pt-team-a border-divider" id="th-teamA-6">Team A</th>
-                            <th colspan="3" class="pt-team-b border-divider" id="th-teamB-6">Team B</th>
-                        </tr>
-                        <tr>
-                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
-                            <th class="border-divider">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th>
-                        </tr>
-                    </thead>
-                </table>
-                <div class="no-scroll-wrapper">
-                    <table class="pt-table">
-                        <colgroup><col style="width:28%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"><col style="width:12%;"></colgroup>
-                        <tbody id="table-body-senior-nonstage"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- PAGE 7: INLINE FEST GALLERY (STATIC PLAYERS FIXED FOR SMART TVS) -->
-        <div id="view-7" class="view-container">
-            <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Logo"></div>
-            <div class="page-title">📸 ഫെസ്റ്റ് ഗാലറി (FEST GALLERY)</div>
-            <div class="gallery-wrapper">
-                <div id="inline-gallery-container">
-                    <!-- STATIC HTML TAGS PREVENT TV CRASHES -->
-                    <video id="gallery-video" class="gallery-media" style="display:none;" playsinline preload="metadata"></video>
-                    <img id="gallery-img" class="gallery-media" style="display:none;" alt="">
-                </div>
-            </div>
+        <div class="stats-row">
+            <div class="stat-box"><div class="stat-value num-font" id="stat-programs">0</div><div class="stat-label">മത്സരങ്ങൾ</div></div>
+            <div class="stat-box"><div class="stat-value num-font" id="stat-candidates">0</div><div class="stat-label">കുട്ടികൾ</div></div>
+            <div class="stat-box"><div class="stat-value num-font" id="stat-teams">2</div><div class="stat-label">ടീമുകൾ</div></div>
         </div>
     </div>
 
-    <script>
-        var appStarted = false;
+    <!-- PAGE 2: LATEST RESULTS -->
+    <div id="view-2" class="view-container">
+        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026"></div>
+        <div class="page-title">ഏറ്റവും പുതിയ ഫലങ്ങൾ (LATEST RESULTS)</div>
+        <div class="results-grid" id="results-grid-container"></div>
+    </div>
 
-        function createZeroGravity() {
-            var bg = document.getElementById('zg-bg');
-            var colors = ['#ec4899', '#8b5cf6', '#fbbf24', '#34d399', '#fb7185'];
-            for(var i=0; i<6; i++) { 
-                var orb = document.createElement('div');
-                orb.className = 'orb';
-                var size = Math.random() * 10 + 5; 
-                orb.style.width = size + 'vh'; orb.style.height = size + 'vh';
-                orb.style.left = Math.random() * 90 + 'vw'; orb.style.top = Math.random() * 80 + 'vh';
-                orb.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                orb.style.animationDuration = (Math.random() * 5 + 5) + 's';
-                bg.appendChild(orb);
+    <!-- PAGE 3: CATEGORY SCORES -->
+    <div id="view-3" class="view-container">
+        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026"></div>
+        <div class="page-title">വിഭാഗം തിരിച്ചുള്ള പോയിന്റുകൾ (CATEGORY SCORES)</div>
+        <div class="category-container">
+            <div class="cat-box"><div class="cat-title">ജൂനിയർ (Junior)</div><div class="cat-team-row"><span class="cat-tname a" id="name-teamA-2">Team A</span><span class="cat-pts num-font" id="cat-j-a">0</span></div><div class="cat-team-row"><span class="cat-tname b" id="name-teamB-2">Team B</span><span class="cat-pts num-font" id="cat-j-b">0</span></div></div>
+            <div class="cat-box"><div class="cat-title">സീനിയർ (Senior)</div><div class="cat-team-row"><span class="cat-tname a" id="name-teamA-3">Team A</span><span class="cat-pts num-font" id="cat-s-a">0</span></div><div class="cat-team-row"><span class="cat-tname b" id="name-teamB-3">Team B</span><span class="cat-pts num-font" id="cat-s-b">0</span></div></div>
+            <div class="cat-box"><div class="cat-title">ജനറൽ (General)</div><div class="cat-team-row"><span class="cat-tname a" id="name-teamA-4">Team A</span><span class="cat-pts num-font" id="cat-g-a">0</span></div><div class="cat-team-row"><span class="cat-tname b" id="name-teamB-4">Team B</span><span class="cat-pts num-font" id="cat-g-b">0</span></div></div>
+        </div>
+    </div>
+
+    <!-- PAGE 4: JUNIOR TABLE -->
+    <div id="view-4" class="view-container">
+        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img"></div>
+        <div class="page-title">പോയിന്റ് ടേബിൾ - ജൂനിയർ (JUNIOR)</div>
+        <div class="table-container">
+            <table class="pt-header-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup>
+                <thead><tr><th rowspan="2" class="t-left">മത്സരം (Program)</th><th colspan="3" class="pt-team-a" id="th-teamA-4">Team A</th><th colspan="3" class="pt-team-b br-left" id="th-teamB-4">Team B</th></tr><tr><th>🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th><th class="br-left">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th></tr></thead>
+            </table>
+            <div class="no-scroll-wrapper"><table class="pt-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup><tbody id="table-body-junior"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- PAGE 5: SENIOR + GENERAL (PART 1) -->
+    <div id="view-5" class="view-container">
+        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img"></div>
+        <!-- TITLE UPDATED: NO MENTION OF STAGE -->
+        <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (PART 1)</div>
+        <div class="table-container">
+            <table class="pt-header-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup>
+                <thead><tr><th rowspan="2" class="t-left">മത്സരം (Program)</th><th colspan="3" class="pt-team-a" id="th-teamA-5">Team A</th><th colspan="3" class="pt-team-b br-left" id="th-teamB-5">Team B</th></tr><tr><th>🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th><th class="br-left">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th></tr></thead>
+            </table>
+            <div class="no-scroll-wrapper"><table class="pt-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup><tbody id="table-body-senior-1"></tbody></table></div>
+        </div>
+    </div>
+
+    <!-- PAGE 6: SENIOR + GENERAL (PART 2) -->
+    <div id="view-6" class="view-container">
+        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img"></div>
+        <!-- TITLE UPDATED: NO MENTION OF NON-STAGE -->
+        <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (PART 2)</div>
+        <div class="table-container">
+            <table class="pt-header-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup>
+                <thead><tr><th rowspan="2" class="t-left">മത്സരം (Program)</th><th colspan="3" class="pt-team-a" id="th-teamA-6">Team A</th><th colspan="3" class="pt-team-b br-left" id="th-teamB-6">Team B</th></tr><tr><th>🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th><th class="br-left">🥇 1st</th><th>🥈 2nd</th><th>🥉 3rd</th></tr></thead>
+            </table>
+            <div class="no-scroll-wrapper"><table class="pt-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup><tbody id="table-body-senior-2"></tbody></table></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var appStarted = false;
+    var tvWakeLockAudio = null; 
+
+    // Reduced Orbs for 2GB RAM
+    function createZeroGravity() {
+        var bg = document.getElementById('zg-bg');
+        var colors = ['#ec4899', '#8b5cf6', '#fbbf24', '#34d399'];
+        for(var i=0; i<4; i++) {
+            var orb = document.createElement('div');
+            orb.className = 'orb';
+            var size = Math.random() * 10 + 5; 
+            orb.style.width = size + 'vh'; orb.style.height = size + 'vh';
+            orb.style.left = Math.random() * 90 + 'vw'; orb.style.top = Math.random() * 80 + 'vh';
+            orb.style.backgroundColor = colors[i];
+            orb.style.animationDuration = (Math.random() * 5 + 8) + 's'; 
+            bg.appendChild(orb);
+        }
+    }
+    createZeroGravity();
+
+    // ==========================================
+    // NON-CRASH TV WAKE LOCK (Zero Hard Hacks)
+    // ==========================================
+    var wakeLockObj = null;
+    async function preventSleep() {
+        if(!appStarted) return;
+        
+        // 1. Standard WakeLock API
+        try {
+            if ('wakeLock' in navigator) { 
+                if(wakeLockObj) await wakeLockObj.release().catch(e=>{}); 
+                wakeLockObj = await navigator.wakeLock.request('screen');
             }
-        }
-        createZeroGravity();
+        } catch(e) {}
+        
+        // 2. Tizen TV / WebOS lightweight native request
+        try { if (typeof tizen !== 'undefined' && tizen.power) tizen.power.request('SCREEN', 'SCREEN_NORMAL'); } catch(e) {}
 
-        var wakeLockObj = null;
-        async function preventSleep() {
-            try {
-                if ('wakeLock' in navigator) { 
-                    wakeLockObj = await navigator.wakeLock.request('screen');
-                }
-            } catch(e) {}
-            try {
-                if (typeof tizen !== 'undefined' && tizen.power) {
-                    tizen.power.request('SCREEN', 'SCREEN_NORMAL');
-                }
-            } catch(e) {}
-        }
-        setInterval(function() { if (appStarted) preventSleep(); }, 60000); 
+        // 3. Keep Audio playing silently
+        if (tvWakeLockAudio && tvWakeLockAudio.paused) { tvWakeLockAudio.play().catch(e=>{}); }
+    }
 
-        function toggleFullScreen() {
-            try {
-                var elem = document.documentElement;
-                if (elem.requestFullscreen) { elem.requestFullscreen().catch(function(){}); }
-                else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
-            } catch (e) {}
-        }
+    function simulateInteraction() {
+        if (!appStarted) return;
+        // Simulating a tiny, invisible keyboard event tricks the TV into thinking a user pressed the remote, resetting the sleep timer
+        try { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); } catch(e){}
+        preventSleep();
+    }
 
-        function startApp() {
-            preventSleep();
-            toggleFullScreen();
-            
-            document.getElementById('start-overlay').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            
-            var a1 = document.getElementById('sound-score');
-            var a2 = document.getElementById('sound-result');
-            if(a1) { a1.muted=true; a1.play().then(function(){a1.pause();a1.muted=false;}).catch(function(){}); }
-            if(a2) { a2.muted=true; a2.play().then(function(){a2.pause();a2.muted=false;}).catch(function(){}); }
+    // Ping interactions every 20 seconds
+    setInterval(simulateInteraction, 20000); 
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') preventSleep(); });
 
-            appStarted = true; 
-            scheduleRender();
-            startCarousel();
-        }
+    function unlockAudio(audioElem) {
+        if(!audioElem) return;
+        audioElem.muted = true;
+        var p = audioElem.play();
+        if (p !== undefined) p.then(() => { audioElem.pause(); audioElem.currentTime = 0; audioElem.muted = false; }).catch(e=>{});
+    }
 
-        function playSound(type) {
-            if (!appStarted) return;
-            try { 
-                var audio = document.getElementById(type === 'score' ? 'sound-score' : 'sound-result'); 
-                if (audio) { 
-                    audio.pause();
-                    audio.currentTime = 0; 
-                    audio.play().catch(function(e){}); 
-                }
-            } catch(e) {}
+    function toggleFullScreen() {
+        try {
+            var el = document.documentElement;
+            if (el.requestFullscreen) el.requestFullscreen().catch(e=>{}); 
+            else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        } catch (e) {}
+    }
+
+    function startApp() {
+        toggleFullScreen();
+        document.getElementById('start-overlay').style.display = 'none';
+        document.getElementById('app').style.display = 'block';
+        
+        unlockAudio(document.getElementById('sound-score'));
+        unlockAudio(document.getElementById('sound-result'));
+        
+        // Silent Audio Loop (Very safe for RAM)
+        try {
+            tvWakeLockAudio = document.getElementById('sound-score').cloneNode();
+            tvWakeLockAudio.loop = true;
+            tvWakeLockAudio.muted = true; 
+            tvWakeLockAudio.volume = 0;
+            tvWakeLockAudio.play().catch(e=>{});
+        } catch(e) {}
+
+        appStarted = true; 
+        simulateInteraction(); // Kickstart the anti-sleep
+        renderAll();
+    }
+
+    function playSound(type) {
+        if (!appStarted) return;
+        try { 
+            var audio = document.getElementById(type === 'score' ? 'sound-score' : 'sound-result'); 
+            if (audio) { audio.pause(); audio.currentTime = 0; audio.volume = 1; audio.muted = false; audio.play().catch(e=>{}); }
+        } catch(e) {}
+    }
+
+    function showToast(msg) {
+        var t = document.getElementById('toast'); t.innerText = msg; t.className = 'show';
+        setTimeout(function(){ t.className = ''; }, 5000);
+    }
+
+    // ==========================================
+    // RAM-SAFE GALLERY LOGIC (IMAGE ONLY)
+    // ==========================================
+    var galleryItems = []; 
+    var currentGalleryIndex = 0;
+    var galleryActive = false;
+    var galleryTimer = null;
+
+    function scheduleNextGallery() {
+        if(galleryTimer) clearTimeout(galleryTimer);
+        galleryTimer = setTimeout(triggerGallery, 240000); // 4 minutes
+    }
+    scheduleNextGallery();
+
+    function triggerGallery() {
+        if (!galleryItems || galleryItems.length === 0 || galleryActive) {
+            if(!galleryActive) scheduleNextGallery();
+            return;
         }
         
-        function triggerEpicReveal() {
+        // Network Check: Skip gallery if WiFi dropped so it doesn't hang
+        if(navigator.onLine === false) { scheduleNextGallery(); return; }
+
+        galleryActive = true;
+        if(galleryTimer) clearTimeout(galleryTimer);
+        
+        document.getElementById('gallery-overlay').style.display = 'block';
+        setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 100);
+
+        currentGalleryIndex = 0;
+        playNextGalleryItem();
+    }
+
+    function playNextGalleryItem() {
+        if(currentGalleryIndex >= galleryItems.length || navigator.onLine === false) {
+            endGalleryShow();
+            return;
+        }
+
+        var item = galleryItems[currentGalleryIndex];
+        var imgPlayer = document.getElementById('tv-img-player');
+        
+        imgPlayer.classList.remove('active');
+        imgPlayer.src = "";
+
+        // Display Image
+        imgPlayer.src = item.url;
+        imgPlayer.classList.add('active');
+        currentGalleryIndex++;
+        
+        // Wait specified duration, then go to next
+        setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
+    }
+
+    function endGalleryShow() {
+        document.getElementById('gallery-overlay').style.opacity = '0';
+        // Clear memory
+        document.getElementById('tv-img-player').src = "";
+        
+        setTimeout(function() { 
+            document.getElementById('gallery-overlay').style.display = 'none'; 
+            galleryActive = false;
+            scheduleNextGallery();
+        }, 1000);
+    }
+
+    // MAIN TV CAROUSEL
+    var currentViewIndex = 1;
+    setInterval(function() {
+        if(galleryActive) return; 
+        for(var i=1; i<=6; i++) document.getElementById('view-' + i).className = 'view-container';
+        currentViewIndex++;
+        if(currentViewIndex > 6) currentViewIndex = 1;
+        document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
+    }, 15000); 
+
+    // FIREBASE SETUP
+    var firebaseConfig = {
+        apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
+        authDomain: "pullani-6a39b.firebaseapp.com",
+        projectId: "pullani-6a39b",
+        storageBucket: "pullani-6a39b.firebasestorage.app",
+        messagingSenderId: "617480764841",
+        appId: "1:617480764841:web:c22959689a7003a31498b8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+    var db = firebase.firestore();
+
+    var state = { teams: { teamA: { name: 'ഖവാരിസ്മി' }, teamB: { name: 'Team B' } }, programs: [], candidates: [], results: [] };
+    var prevScoreA = -1; var prevScoreB = -1; var prevTotalRes = -1;
+
+    function getProg(id) { for(var i=0; i<state.programs.length; i++) if(state.programs[i].id === id) return state.programs[i]; return null; }
+    function getCand(id) { for(var i=0; i<state.candidates.length; i++) if(state.candidates[i].id === id) return state.candidates[i]; return null; }
+    function getTeamName(tid) { return (state.teams && state.teams[tid]) ? state.teams[tid].name : '-'; }
+    
+    auth.signInAnonymously().then(function() {
+        db.collection('settings').doc('config_v4').onSnapshot(function(snap) {
+            if (snap.exists) { 
+                var d = snap.data(); 
+                if (d.teams) state.teams = d.teams; 
+                if (d.programs) state.programs = d.programs; 
+                if (d.gallery) {
+                    // FORCE REMOVE VIDEOS: Automatically filter out videos to guarantee zero RAM crashes
+                    galleryItems = d.gallery.filter(function(item) { return item.type !== 'video'; });
+                }
+                renderAll(); 
+            }
+        });
+        db.collection('candidates').onSnapshot(function(snap) {
+            var arr = []; snap.forEach(doc => { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.candidates = arr; renderAll();
+        });
+        db.collection('results').onSnapshot(function(snap) {
+            var arr = []; snap.forEach(doc => { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.results = arr; renderAll();
+        });
+    });
+
+    function generateTableRows(programList) {
+        var tbody = "";
+        if (programList.length === 0) return "<tr><td colspan='7' style='color:#64748b;'>പ്രോഗ്രാമുകൾ ചേർത്തിട്ടില്ല</td></tr>";
+        
+        for (var p = 0; p < programList.length; p++) {
+            var tProg = programList[p];
+            var names = tProg.name.split('\n');
+            var mlName = names[0];
+            var enName = names.length > 1 ? "<span class='p-name-eng'>" + names[1] + "</span>" : "";
+
+            // ONLY TAGS FOR GROUP AND GEN (No mention of Stage or Non-Stage)
+            var tTag = ""; 
+            if(tProg.isGroup) tTag += "<span class='s-tag s-grp'>Group</span>";
+            if(tProg.cat === 'General') tTag += "<span class='s-tag s-gen'>Gen</span>";
+
+            var tRes = null;
+            for(var j=0; j<state.results.length; j++) { if(state.results[j].progId === tProg.id) { tRes = state.results[j]; break; } }
+
+            var a1="-", a2="-", a3="-", b1="-", b2="-", b3="-";
+            if (tRes) {
+                var tF = tProg.isGroup ? 15 : 10; var tS = tProg.isGroup ? 10 : 5; var tT = tProg.isGroup ? 5 : 3;
+                var checkPts = function(ids, pts) {
+                    var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
+                    for(var k=0; k<arr.length; k++) {
+                        var cand = getCand(arr[k]);
+                        if(cand) {
+                            if(cand.team === 'teamA') { if(pts === tF) a1 = tF; else if(pts === tS) a2 = tS; else if(pts === tT) a3 = tT; }
+                            else if(cand.team === 'teamB') { if(pts === tF) b1 = tF; else if(pts === tS) b2 = tS; else if(pts === tT) b3 = tT; }
+                        }
+                    }
+                };
+                checkPts(tRes.first, tF); checkPts(tRes.second, tS); checkPts(tRes.third, tT);
+            }
+
+            var sA1 = a1 !== "-" ? "color:#fbbf24; font-size:120%;" : "color:#334155;";
+            var sA2 = a2 !== "-" ? "color:#cbd5e1; font-size:110%;" : "color:#334155;";
+            var sA3 = a3 !== "-" ? "color:#d97706; font-size:110%;" : "color:#334155;";
+            var sB1 = b1 !== "-" ? "color:#fbbf24; font-size:120%;" : "color:#334155;";
+            var sB2 = b2 !== "-" ? "color:#cbd5e1; font-size:110%;" : "color:#334155;";
+            var sB3 = b3 !== "-" ? "color:#d97706; font-size:110%;" : "color:#334155;";
+
+            tbody += "<tr>" +
+                "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
+                "<td style='" + sA1 + "'>" + a1 + "</td><td style='" + sA2 + "'>" + a2 + "</td><td style='" + sA3 + "'>" + a3 + "</td>" +
+                "<td class='br-left' style='" + sB1 + "'>" + b1 + "</td><td style='" + sB2 + "'>" + b2 + "</td><td style='" + sB3 + "'>" + b3 + "</td>" +
+                "</tr>";
+        }
+        return tbody;
+    }
+
+    function getCandNamesString(ids) {
+        var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); if(arr.length === 0) return '-';
+        return arr.map(i => { var c = getCand(i); return c ? c.name : '-'; }).join(', ');
+    }
+    function getTeamNamesString(ids) {
+        var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []); if(arr.length === 0) return '-';
+        var teams = []; arr.forEach(i => { var c = getCand(i); if(c) { var t = getTeamName(c.team); if(teams.indexOf(t)===-1) teams.push(t); }});
+        return teams.length > 0 ? teams.join(' & ') : '-';
+    }
+
+    function renderAll() {
+        if (!appStarted) return;
+        var stats = { teamA: { total: 0, junior: 0, senior: 0, general: 0 }, teamB: { total: 0, junior: 0, senior: 0, general: 0 } };
+        
+        state.results.forEach(res => {
+            var prog = getProg(res.progId);
+            var isGroup = prog ? prog.isGroup : false; var cat = prog ? prog.cat : 'General';
+            var fPts = isGroup ? 15 : 10; var sPts = isGroup ? 10 : 5; var tPts = isGroup ? 5 : 3;
+
+            var addPts = (ids, pts) => {
+                var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
+                arr.forEach(i => { var c = getCand(i); if(c && stats[c.team]) { stats[c.team].total += pts; stats[c.team][cat.toLowerCase()] += pts; } });
+            };
+            addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
+        });
+        
+        var sortedRes = state.results.slice().sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
+        
+        if (prevScoreA !== -1 && (prevScoreA !== stats.teamA.total || prevScoreB !== stats.teamB.total)) { playSound('score'); showToast("പോയിന്റ് നില അപ്ഡേറ്റ് ചെയ്തു!"); }
+        if (prevTotalRes !== -1 && sortedRes.length > prevTotalRes) { 
             playSound('result');
-            try { confetti({ particleCount: 80, spread: 100, origin: { y: 0.6 }, colors: ['#fbbf24', '#ec4899', '#818cf8'] }); } catch(e) {}
             showToast("🔥 പുതിയ റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു! 🔥");
-            
-            currentViewIndex = 1; 
-            moveToNextView();
+            try { confetti({ particleCount: 20, spread: 60, origin: { y: 0.8 } }); } catch(e){} 
         }
-
-        function showToast(msg) {
-            var t = document.getElementById('toast'); t.innerText = msg; t.className = 'show';
-            setTimeout(function(){ t.className = ''; }, 5000);
-        }
-
-        var galleryItems = []; 
-        var currentGalleryIndex = 0;
         
-        var currentViewIndex = 1;
-        var carouselTimer = null;
-        var totalViews = 7; 
+        prevScoreA = stats.teamA.total; prevScoreB = stats.teamB.total; prevTotalRes = sortedRes.length;
 
-        function startCarousel() {
-            if(carouselTimer) clearTimeout(carouselTimer);
-            carouselTimer = setTimeout(moveToNextView, 15000); // 15s delay
+        document.getElementById('stat-programs').innerText = state.programs.length;
+        document.getElementById('stat-candidates').innerText = state.candidates.length;
+
+        var taName = getTeamName('teamA'); var tbName = getTeamName('teamB');
+        if(taName === 'Team A') taName = 'ഖവാരിസ്മി'; 
+        
+        [1,2,3,4].forEach(i => { document.getElementById('name-teamA-'+i).innerText = taName; document.getElementById('name-teamB-'+i).innerText = tbName; });
+        [4,5,6].forEach(i => { document.getElementById('th-teamA-'+i).innerText = taName; document.getElementById('th-teamB-'+i).innerText = tbName; });
+
+        document.getElementById('score-teamA').innerText = stats.teamA.total; document.getElementById('score-teamB').innerText = stats.teamB.total;
+        document.getElementById('cat-j-a').innerText = stats.teamA.junior; document.getElementById('cat-j-b').innerText = stats.teamB.junior;
+        document.getElementById('cat-s-a').innerText = stats.teamA.senior; document.getElementById('cat-s-b').innerText = stats.teamB.senior;
+        document.getElementById('cat-g-a').innerText = stats.teamA.general; document.getElementById('cat-g-b').innerText = stats.teamB.general;
+
+        var resHtml = sortedRes.length === 0 ? "<h2 style='color:#64748b; grid-column:span 2; text-align:center;'>ഫലങ്ങൾ വന്നിട്ടില്ല...</h2>" : "";
+        for(var r=0; r<Math.min(sortedRes.length, 5); r++) {
+            var lRes = sortedRes[r]; var lProg = getProg(lRes.progId);
+            var pNames = lProg ? lProg.name.split('\n') : ['-']; 
+            var pEngName = pNames.length > 1 ? "<span class='rc-title-eng'>" + pNames[1] + "</span>" : "";
+            var isNew = r === 0 ? " newest" : "";
+            var rib = isNew ? "<div class='corner-ribbon'></div>" : "";
+
+            resHtml += "<div class='res-card" + isNew + "'>" + rib + "<div class='rc-title'><div class='rc-title-text'><span>" + pNames[0] + "</span>" + pEngName + "</div> <span class='rc-cat'>" + (lProg ? lProg.cat : '') + "</span></div>";
+            if(getCandNamesString(lRes.first) !== '-') resHtml += "<div class='rc-row first'><span class='rc-name'>🥇 " + getCandNamesString(lRes.first) + "</span><span class='rc-team' style='color:#fbbf24'>" + getTeamNamesString(lRes.first) + "</span></div>";
+            if(getCandNamesString(lRes.second) !== '-') resHtml += "<div class='rc-row second'><span class='rc-name'>🥈 " + getCandNamesString(lRes.second) + "</span><span class='rc-team' style='color:#cbd5e1'>" + getTeamNamesString(lRes.second) + "</span></div>";
+            if(getCandNamesString(lRes.third) !== '-') resHtml += "<div class='rc-row third'><span class='rc-name'>🥉 " + getCandNamesString(lRes.third) + "</span><span class='rc-team' style='color:#b45309'>" + getTeamNamesString(lRes.third) + "</span></div>";
+            resHtml += "</div>";
         }
+        document.getElementById('results-grid-container').innerHTML = resHtml;
 
-        function moveToNextView() {
-            if(carouselTimer) clearTimeout(carouselTimer);
-            
-            // CLEANUP TV VIDEO INSTANTLY TO SAVE RAM
-            var vidPlayer = document.getElementById('gallery-video');
-            if (vidPlayer && !vidPlayer.paused) {
-                vidPlayer.pause();
-                vidPlayer.removeAttribute('src'); 
-                vidPlayer.load(); // Forces TV browser to drop memory
-                vidPlayer.style.display = 'none';
+        // SEPARATE INTO JUNIOR AND SENIOR/GEN (Merged)
+        var jProgs = [], sgProgs = [];
+        state.programs.forEach(prg => {
+            if(prg.cat === 'Junior') { 
+                jProgs.push(prg); 
+            } else if(prg.cat === 'Senior' || prg.cat === 'General') { 
+                sgProgs.push(prg); 
             }
-
-            currentViewIndex++;
-            
-            // Skip page 7 if no gallery items
-            if (currentViewIndex === 7 && (!galleryItems || galleryItems.length === 0)) {
-                currentViewIndex = 1; 
-            } else if (currentViewIndex > totalViews) {
-                currentViewIndex = 1; 
-            }
-
-            for(var i=1; i<=totalViews; i++) {
-                document.getElementById('view-' + i).className = 'view-container';
-            }
-            document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
-
-            if (currentViewIndex === 7) {
-                playInlineGalleryItem();
-            } else {
-                startCarousel(); 
-            }
-        }
-
-        // USING STATIC HTML TAGS SO TV DOES NOT CRASH
-        function playInlineGalleryItem() {
-            var vidPlayer = document.getElementById('gallery-video');
-            var imgPlayer = document.getElementById('gallery-img');
-            
-            if (currentGalleryIndex >= galleryItems.length) currentGalleryIndex = 0;
-            var item = galleryItems[currentGalleryIndex];
-            currentGalleryIndex++; 
-
-            if (item.type === 'video') {
-                imgPlayer.style.display = 'none';
-                vidPlayer.style.display = 'block';
-                vidPlayer.src = item.url;
-                
-                vidPlayer.onended = function() { moveToNextView(); };
-                vidPlayer.onerror = function() { moveToNextView(); };
-                
-                var playPromise = vidPlayer.play();
-                if(playPromise !== undefined) {
-                    playPromise.catch(function() { 
-                        vidPlayer.muted = true; 
-                        var mPromise = vidPlayer.play();
-                        if(mPromise) mPromise.catch(function(){ moveToNextView(); });
-                    });
-                }
-                
-                carouselTimer = setTimeout(moveToNextView, 120000); 
-
-            } else {
-                vidPlayer.style.display = 'none';
-                vidPlayer.pause();
-                vidPlayer.removeAttribute('src');
-                
-                imgPlayer.style.display = 'block';
-                imgPlayer.src = item.url;
-                
-                carouselTimer = setTimeout(moveToNextView, (item.duration || 10) * 1000);
-            }
-        }
-
-        var firebaseConfig = {
-            apiKey: "AIzaSyCIbvk4teIJ6AlfaXbFgDMgCWpnekNwmx8",
-            authDomain: "pullani-6a39b.firebaseapp.com",
-            projectId: "pullani-6a39b",
-            storageBucket: "pullani-6a39b.firebasestorage.app",
-            messagingSenderId: "617480764841",
-            appId: "1:617480764841:web:c22959689a7003a31498b8"
-        };
-        firebase.initializeApp(firebaseConfig);
-        var auth = firebase.auth();
-        var db = firebase.firestore();
-
-        // CHANGED TEAM A DEFAULT NAME TO ഖവാരിസ്മി
-        var state = { teams: { teamA: { name: 'ഖവാരിസ്മി' }, teamB: { name: 'Team B' } }, programs: [], candidates: [], results: [] };
-        var prevScoreA = -1; var prevScoreB = -1; var prevTotalRes = -1;
-
-        var renderTimer = null;
-        function scheduleRender() {
-            if(renderTimer) clearTimeout(renderTimer);
-            renderTimer = setTimeout(renderAll, 500); 
-        }
-
-        auth.signInAnonymously().then(function() {
-            db.collection('settings').doc('config_v4').onSnapshot(function(snap) {
-                if (snap.exists) { 
-                    var d = snap.data(); 
-                    if (d.teams) state.teams = d.teams; 
-                    if (d.programs) state.programs = d.programs; 
-                    if (d.gallery) galleryItems = d.gallery;
-                    scheduleRender(); 
-                }
-            });
-            db.collection('candidates').onSnapshot(function(snap) {
-                var arr = []; snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.candidates = arr; scheduleRender();
-            });
-            db.collection('results').onSnapshot(function(snap) {
-                var arr = []; snap.forEach(function(doc) { var d = doc.data(); d.id = doc.id; arr.push(d); }); state.results = arr; scheduleRender();
-            });
         });
 
-        function getProg(id) { for(var i=0; i<state.programs.length; i++) if(state.programs[i].id === id) return state.programs[i]; return null; }
-        function getCand(id) { for(var i=0; i<state.candidates.length; i++) if(state.candidates[i].id === id) return state.candidates[i]; return null; }
-        function getTeamName(tid) { return (state.teams && state.teams[tid]) ? state.teams[tid].name : '-'; }
+        // Split the Senior/Gen array in half to fit perfectly onto two pages without scrolling
+        var halfLength = Math.ceil(sgProgs.length / 2);
+        var sgPart1 = sgProgs.slice(0, halfLength);
+        var sgPart2 = sgProgs.slice(halfLength);
 
-        function generateTableRows(programList) {
-            var tbody = "";
-            if (programList.length === 0) return "<tr><td colspan='7' style='color:#64748b; padding: 4vh;'>പ്രോഗ്രാമുകൾ ചേർത്തിട്ടില്ല</td></tr>";
-            
-            for (var p = 0; p < programList.length; p++) {
-                var tProg = programList[p];
-                var names = tProg.name.split('\n');
-                var mlName = names[0];
-                var enName = names.length > 1 ? "<span class='p-name-eng'>" + names[1] + "</span>" : "";
-                
-                var tTag = "";
-                if(tProg.isGroup) tTag += "<span class='s-tag' style='background:#78350f; color:#fcd34d;'>Group</span>";
-                if(tProg.cat === 'General') tTag += "<span class='s-tag' style='background:#064e3b; color:#34d399;'>Gen</span>";
-                
-                var tRes = null;
-                for(var j=0; j<state.results.length; j++) { if(state.results[j].progId === tProg.id) { tRes = state.results[j]; break; } }
-
-                var a1="-", a2="-", a3="-", b1="-", b2="-", b3="-";
-                if (tRes) {
-                    var tF = tProg.isGroup ? 15 : 10; var tS = tProg.isGroup ? 10 : 5; var tT = tProg.isGroup ? 5 : 3;
-                    var checkPts = function(ids, pts) {
-                        var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
-                        for(var k=0; k<arr.length; k++) {
-                            var cand = getCand(arr[k]);
-                            if(cand) {
-                                if(cand.team === 'teamA') { if(pts === tF) a1 = tF; else if(pts === tS) a2 = tS; else if(pts === tT) a3 = tT; }
-                                else if(cand.team === 'teamB') { if(pts === tF) b1 = tF; else if(pts === tS) b2 = tS; else if(pts === tT) b3 = tT; }
-                            }
-                        }
-                    };
-                    checkPts(tRes.first, tF); checkPts(tRes.second, tS); checkPts(tRes.third, tT);
-                }
-
-                var sA1 = a1 !== "-" ? "color:#fbbf24; text-shadow: 0 0 1vh rgba(251,191,36,0.3);" : "color:#334155; font-weight:normal;";
-                var sA2 = a2 !== "-" ? "color:#e2e8f0;" : "color:#334155; font-weight:normal;";
-                var sA3 = a3 !== "-" ? "color:#d97706;" : "color:#334155; font-weight:normal;";
-                var sB1 = b1 !== "-" ? "color:#fbbf24; text-shadow: 0 0 1vh rgba(251,191,36,0.3);" : "color:#334155; font-weight:normal;";
-                var sB2 = b2 !== "-" ? "color:#e2e8f0;" : "color:#334155; font-weight:normal;";
-                var sB3 = b3 !== "-" ? "color:#d97706;" : "color:#334155; font-weight:normal;";
-
-                tbody += "<tr>" +
-                    "<td class='t-left'><div class='prog-name-wrapper'><div class='p-name-txt'>" + mlName + enName + "</div>" + tTag + "</div></td>" +
-                    "<td class='pts-col border-divider' style='" + sA1 + "'>" + a1 + "</td><td class='pts-col' style='" + sA2 + "'>" + a2 + "</td><td class='pts-col' style='" + sA3 + "'>" + a3 + "</td>" +
-                    "<td class='pts-col border-divider' style='" + sB1 + "'>" + b1 + "</td><td class='pts-col' style='" + sB2 + "'>" + b2 + "</td><td class='pts-col' style='" + sB3 + "'>" + b3 + "</td>" +
-                    "</tr>";
-            }
-            return tbody;
-        }
-
-        function renderAll() {
-            if (!appStarted) return;
-            var stats = { teamA: { total: 0, junior: 0, senior: 0, general: 0 }, teamB: { total: 0, junior: 0, senior: 0, general: 0 } };
-            
-            for(var i=0; i<state.results.length; i++) {
-                var res = state.results[i]; var prog = getProg(res.progId);
-                var isGroup = prog ? prog.isGroup : false; var cat = prog ? prog.cat : 'General';
-                var fPts = isGroup ? 15 : 10; var sPts = isGroup ? 10 : 5; var tPts = isGroup ? 5 : 3;
-
-                var addPts = function(ids, pts) {
-                    var arr = Array.isArray(ids) ? ids : (ids ? [ids] : []);
-                    for(var k=0; k<arr.length; k++) { var c = getCand(arr[k]); if(c && stats[c.team]) { stats[c.team].total += pts; stats[c.team][cat.toLowerCase()] += pts; } }
-                };
-                addPts(res.first, fPts); addPts(res.second, sPts); addPts(res.third, tPts);
-            }
-            
-            var sortedRes = state.results.slice().sort(function(a,b) { return (b.timestamp || 0) - (a.timestamp || 0); });
-            
-            if (prevScoreA !== -1 && (prevScoreA !== stats.teamA.total || prevScoreB !== stats.teamB.total)) { playSound('score'); showToast("പോയിന്റ് നില അപ്ഡേറ്റ് ചെയ്തു!"); }
-            if (prevTotalRes !== -1 && sortedRes.length > prevTotalRes) { triggerEpicReveal(); }
-            
-            prevScoreA = stats.teamA.total; prevScoreB = stats.teamB.total; prevTotalRes = sortedRes.length;
-
-            document.getElementById('stat-programs').innerText = state.programs.length;
-            document.getElementById('stat-candidates').innerText = state.candidates.length;
-            document.getElementById('stat-teams').innerText = 2; 
-
-            var taName = getTeamName('teamA'); var tbName = getTeamName('teamB');
-            [1,2,3,4].forEach(n => { document.getElementById('name-teamA-'+n).innerText = taName; document.getElementById('name-teamB-'+n).innerText = tbName; });
-            [4,5,6].forEach(n => { document.getElementById('th-teamA-'+n).innerText = taName; document.getElementById('th-teamB-'+n).innerText = tbName; });
-
-            document.getElementById('score-teamA').innerText = stats.teamA.total; document.getElementById('score-teamB').innerText = stats.teamB.total;
-            document.getElementById('cat-j-a').innerText = stats.teamA.junior; document.getElementById('cat-j-b').innerText = stats.teamB.junior;
-            document.getElementById('cat-s-a').innerText = stats.teamA.senior; document.getElementById('cat-s-b').innerText = stats.teamB.senior;
-            document.getElementById('cat-g-a').innerText = stats.teamA.general; document.getElementById('cat-g-b').innerText = stats.teamB.general;
-
-            var resHtml = "";
-            if (sortedRes.length === 0) resHtml = "<h2 style='color:#64748b; grid-column:span 2; text-align:center; padding-top:10vh;'>ഫലങ്ങൾ വന്നിട്ടില്ല...</h2>";
-            
-            for(var r=0; r<Math.min(sortedRes.length, 5); r++) {
-                var latestRes = sortedRes[r]; var latestProg = getProg(latestRes.progId);
-                var pNames = latestProg ? latestProg.name.split('\n') : ['-']; 
-                
-                var c1 = Array.isArray(latestRes.first) ? latestRes.first : [latestRes.first];
-                var c2 = Array.isArray(latestRes.second) ? latestRes.second : [latestRes.second];
-                var c3 = Array.isArray(latestRes.third) ? latestRes.third : [latestRes.third];
-
-                var getC = (ids) => { var n=[]; ids.forEach(id=>{ var c=getCand(id); if(c)n.push(c.name); }); return n.length?n.join(', '):'-'; };
-                var getT = (ids) => { var t=[]; ids.forEach(id=>{ var c=getCand(id); if(c && t.indexOf(getTeamName(c.team))===-1)t.push(getTeamName(c.team)); }); return t.length?t.join(' & '):'-'; };
-
-                var c1N=getC(c1), c2N=getC(c2), c3N=getC(c3);
-                
-                resHtml += "<div class='res-card" + (r===0?" newest":"") + "'><div class='rc-title'><div class='rc-title-text'><span>" + pNames[0] + "</span>" + (pNames.length>1?"<span class='rc-title-eng'>"+pNames[1]+"</span>":"") + "</div> <span class='rc-cat'>" + (latestProg?latestProg.cat:'') + "</span></div>";
-                if(c1N!=='-') resHtml += "<div class='rc-row first'><span class='rc-name'>🥇 " + c1N + "</span><span class='rc-team' style='color:#fbbf24'>" + getT(c1) + "</span></div>";
-                if(c2N!=='-') resHtml += "<div class='rc-row second'><span class='rc-name'>🥈 " + c2N + "</span><span class='rc-team' style='color:#cbd5e1'>" + getT(c2) + "</span></div>";
-                if(c3N!=='-') resHtml += "<div class='rc-row third'><span class='rc-name'>🥉 " + c3N + "</span><span class='rc-team' style='color:#d97706'>" + getT(c3) + "</span></div>";
-                resHtml += "</div>";
-            }
-            document.getElementById('results-grid-container').innerHTML = resHtml;
-
-            var jP=[], sP=[], nP=[];
-            state.programs.forEach(prg => {
-                if(prg.cat === 'Junior') jP.push(prg);
-                else if(prg.type === 'Stage') sP.push(prg);
-                else nP.push(prg);
-            });
-
-            document.getElementById('table-body-junior').innerHTML = generateTableRows(jP);
-            document.getElementById('table-body-senior-stage').innerHTML = generateTableRows(sP);
-            document.getElementById('table-body-senior-nonstage').innerHTML = generateTableRows(nP);
-        }
-    </script>
-</body>
-</html>
+        document.getElementById('table-body-junior').innerHTML = generateTableRows(jProgs);
+        document.getElementById('table-body-senior-1').innerHTML = generateTableRows(sgPart1);
+        document.getElementById('table-body-senior-2').innerHTML = generateTableRows(sgPart2);
+    }
+</script>
 
 
