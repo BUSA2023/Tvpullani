@@ -1,59 +1,43 @@
 <!-- Premium Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@400;700;800&family=Outfit:wght@400;800;900&display=swap" rel="stylesheet">
 
-<!-- Firebase & Confetti -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
     /* ========================================================
-       TV OPTIMIZED CSS (16:9 Aspect Ratio Focus using vh/vw)
+       ULTRA-LITE TV OPTIMIZED CSS (STATIC BACKGROUND, NO HEAVY ANIMATIONS)
        ======================================================== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { 
         font-family: 'Anek Malayalam', sans-serif; 
-        background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+        background: #020617; /* Solid dark color is much better for TV RAM than gradients */
         color: #ffffff; 
         overflow: hidden; 
         height: 100vh; width: 100vw;
     }
     .num-font { font-family: 'Outfit', sans-serif; }
 
-    /* ZERO GRAVITY BACKGROUND EFFECT (REDUCED TO 4 ORBS FOR RAM) */
-    .zero-gravity-bg {
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        z-index: -1; overflow: hidden; pointer-events: none;
-    }
-    .orb {
-        position: absolute; border-radius: 50%;
-        animation: pulseOrb infinite ease-in-out;
-    }
-    @keyframes pulseOrb {
-        0% { opacity: 0.05; }
-        50% { opacity: 0.15; }
-        100% { opacity: 0.05; }
-    }
-
     /* OVERLAYS */
     #start-overlay {
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0,0,0,0.95); z-index: 9999;
+        background: #000000; z-index: 9999;
         display: flex; align-items: center; justify-content: center; flex-direction: column; cursor: pointer;
     }
-    .start-btn { background: #ec4899; color: white; padding: 3vh 4vw; font-size: 4vh; font-weight: bold; border-radius: 2vh; border: none; cursor: pointer; text-transform: uppercase; box-shadow: 0 0 3vh rgba(236,72,153,0.5); transition: 0.3s;}
+    .start-btn { background: #ec4899; color: white; padding: 3vh 4vw; font-size: 4vh; font-weight: bold; border-radius: 2vh; border: none; cursor: pointer; text-transform: uppercase; transition: 0.3s;}
     
-    /* MAIN VIEW CONTAINER */
+    /* MAIN VIEW CONTAINER - Simplified Fade for weak GPUs */
     .view-container {
         position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
         display: none; flex-direction: column;
         padding: 4vh 4vw; 
-        animation: fadeIn 0.8s ease-in-out; 
+        animation: simpleFade 1s ease-in-out; 
         overflow: hidden;
     }
     .view-active { display: flex; }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    @keyframes simpleFade { from { opacity: 0; } to { opacity: 1; } }
 
     /* HEADER & TITLE */
     .header { text-align: center; margin-bottom: 2vh; height: 10vh; display: flex; align-items: center; justify-content: center; }
@@ -61,32 +45,32 @@
     
     .page-title { 
         text-align: center; font-size: 3vh; color: #fbbf24; margin-bottom: 2vh; 
-        font-weight: bold; background: rgba(0,0,0,0.4); padding: 1vh; 
+        font-weight: bold; background: rgba(255,255,255,0.05); padding: 1vh; 
         border-radius: 2vh; text-transform: uppercase; letter-spacing: 0.2vw;
         flex-shrink: 0;
     }
 
     /* --- PAGE 1: TOTAL SCORE --- */
     .dashboard-content { display: flex; justify-content: space-around; align-items: center; flex: 1; padding: 0 4vw; min-height: 0; }
-    .team-block { text-align: center; width: 40%; background: rgba(15, 23, 42, 0.9); padding: 4vh; border-radius: 4vh; border: 0.4vh solid rgba(255,255,255,0.1); }
+    .team-block { text-align: center; width: 40%; background: rgba(255,255,255,0.05); padding: 4vh; border-radius: 4vh; border: 0.2vh solid rgba(255,255,255,0.1); }
     .team-name { font-size: 6vh; font-weight: bold; margin-bottom: 1vh; }
     .team-name.team-a { color: #fb7185; }
     .team-name.team-b { color: #818cf8; }
     .huge-points { font-size: 24vh; font-weight: 900; line-height: 1; }
-    .vs-circle { background: #0f172a; border: 0.6vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; }
+    .vs-circle { background: #0f172a; border: 0.4vh solid #1e293b; border-radius: 50%; width: 12vh; height: 12vh; display: flex; align-items: center; justify-content: center; font-size: 4vh; font-weight: 900; color: #64748b; font-style: italic; }
 
     .stats-row { display: flex; justify-content: center; gap: 3vw; margin-top: 3vh; flex-shrink: 0; height: 15vh; }
-    .stat-box { background: rgba(15, 23, 42, 0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
+    .stat-box { background: rgba(255,255,255,0.05); border: 0.2vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh 3vw; text-align: center; flex: 1; max-width: 20vw; display: flex; flex-direction: column; justify-content: center; position: relative; }
     .stat-value { font-size: 5vh; font-weight: 900; color: #34d399; line-height: 1.1; }
     .stat-label { font-size: 1.8vh; color: #94a3b8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.1vw; margin-top: 0.5vh;}
 
     /* --- PAGE 2: LATEST RESULTS --- */
     .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5vh; flex: 1; min-height: 0; overflow: hidden; padding: 0.5vh; }
-    .res-card { background: rgba(15,23,42,0.9); border: 0.2vh solid rgba(255,255,255,0.15); border-radius: 2vh; padding: 2vh; display: flex; flex-direction: column; justify-content: center; }
-    .res-card.newest { grid-column: span 2; border-color: #10b981; background: linear-gradient(135deg, rgba(16,185,129,0.2) 0%, rgba(15,23,42,0.95) 100%); padding: 3vh; position: relative; }
+    .res-card { background: rgba(255,255,255,0.05); border: 0.2vh solid rgba(255,255,255,0.1); border-radius: 2vh; padding: 2vh; display: flex; flex-direction: column; justify-content: center; }
+    .res-card.newest { grid-column: span 2; border-color: #10b981; background: rgba(16,185,129,0.1); padding: 3vh; position: relative; }
     
     .corner-ribbon { width: 15vh; height: 15vh; overflow: hidden; position: absolute; top: 0; right: 0; z-index: 10; border-radius: 0 2vh 0 0; }
-    .corner-ribbon::before { content: '✨ LATEST'; position: absolute; display: block; width: 22vh; padding: 1vh 0; background: linear-gradient(90deg, #fbbf24, #f59e0b); box-shadow: 0 1vh 2vh rgba(0,0,0,0.4); color: #78350f; font-weight: 900; font-size: 1.5vh; text-align: center; right: -5vh; top: 3vh; transform: rotate(45deg); }
+    .corner-ribbon::before { content: 'LATEST'; position: absolute; display: block; width: 22vh; padding: 1vh 0; background: #f59e0b; color: #000; font-weight: 900; font-size: 1.5vh; text-align: center; right: -5vh; top: 3vh; transform: rotate(45deg); }
 
     .rc-title { font-weight: bold; color: #fff; border-bottom: 0.1vh solid rgba(255,255,255,0.1); padding-bottom: 1vh; margin-bottom: 1.5vh; display: flex; justify-content: space-between; align-items: center;}
     .rc-title-text { display: flex; flex-direction: column; }
@@ -94,24 +78,24 @@
     .rc-title-eng { font-size: 1.5vh; color: #94a3b8; font-weight: normal; margin-top: 0.5vh; }
     .rc-cat { font-size: 1.5vh; background: #1e293b; padding: 0.5vh 1vw; border-radius: 1vh; color: #94a3b8; font-weight: bold; text-transform: uppercase;}
     
-    .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 1vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; }
+    .rc-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 1vh 1.5vw; border-radius: 1vh; margin-bottom: 1vh; }
     .rc-name { font-size: 2.5vh; font-weight: bold; color: #f1f5f9; }
     .rc-team { font-size: 1.5vh; font-weight: bold; padding: 0.5vh 1vw; border-radius: 0.8vh; background: rgba(255,255,255,0.1); }
     .rc-team.a { color: #fb7185; } .rc-team.b { color: #818cf8; }
 
     /* --- PAGE 3: CATEGORY SCORES --- */
     .category-container { display: flex; justify-content: space-between; gap: 3vw; flex: 1; align-items: center; min-height: 0;}
-    .cat-box { flex: 1; background: rgba(15,23,42,0.8); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 3vh; padding: 5vh 3vw; text-align: center; }
+    .cat-box { flex: 1; background: rgba(255,255,255,0.05); border: 0.1vh solid rgba(255,255,255,0.1); border-radius: 3vh; padding: 5vh 3vw; text-align: center; }
     .cat-title { font-size: 4vh; font-weight: bold; color: #fbbf24; margin-bottom: 4vh; text-transform: uppercase; border-bottom: 0.2vh solid rgba(255,255,255,0.1); padding-bottom: 1.5vh;}
-    .cat-team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh; background: rgba(0,0,0,0.3); padding: 2vh 3vw; border-radius: 2vh; }
+    .cat-team-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2vh; background: rgba(0,0,0,0.5); padding: 2vh 3vw; border-radius: 2vh; }
     .cat-tname { font-size: 3vh; font-weight: bold; }
     .cat-tname.a { color: #fb7185; } .cat-tname.b { color: #818cf8; }
     .cat-pts { font-size: 5vh; font-weight: 900; color: #fff; }
 
     /* --- POINT TABLES --- */
-    .table-container { background: rgba(15, 23, 42, 0.8); border-radius: 2vh; padding: 1vh; border: 0.1vh solid rgba(255,255,255,0.1); flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-    .pt-header-table { width: 100%; border-collapse: collapse; background: rgba(0,0,0,0.8); border-radius: 1vh 1vh 0 0; flex-shrink: 0; table-layout: fixed; }
-    .no-scroll-wrapper { flex: 1; background: rgba(0,0,0,0.4); border-radius: 0 0 1vh 1vh; overflow: hidden; display: flex; flex-direction: column; }
+    .table-container { background: rgba(255,255,255,0.05); border-radius: 2vh; padding: 1vh; border: 0.1vh solid rgba(255,255,255,0.1); flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .pt-header-table { width: 100%; border-collapse: collapse; background: #000; border-radius: 1vh 1vh 0 0; flex-shrink: 0; table-layout: fixed; }
+    .no-scroll-wrapper { flex: 1; background: rgba(0,0,0,0.3); border-radius: 0 0 1vh 1vh; overflow: hidden; display: flex; flex-direction: column; }
     .pt-table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
     .pt-table tbody tr { height: 1%; } 
     th, td { text-align: center; border-bottom: 0.1vh solid rgba(255,255,255,0.05); }
@@ -132,54 +116,17 @@
     .br-left { border-left: 0.2vh solid #334155; }
 
     /* TOAST */
-    #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; transform: translateY(-20vh); transition: transform 0.5s; z-index: 10000; }
-    #toast.show { transform: translateY(0); }
-
-    /* --- RAM-FRIENDLY FULL SCREEN GALLERY OVERLAY (IMAGE ONLY) --- */
-    #gallery-overlay {
-        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-        background: #000; z-index: 9500; display: none; opacity: 0;
-        transition: opacity 1s ease-in-out;
-    }
-    .gallery-media {
-        position: absolute; top: 0; left: 0; width: 100vw; height: 100vh;
-        object-fit: contain; background-color: #000; display: none;
-    }
-    .gallery-media.active { display: block; }
-
-    .gallery-badge {
-        position: absolute; bottom: 6vh; right: 4vw;
-        background: rgba(0,0,0,0.8); color: #fff; padding: 2vh 3vw;
-        border-radius: 2vh; font-size: 3vh; font-weight: bold;
-        border: 0.2vh solid rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-        display: flex; align-items: center; gap: 2vw; z-index: 100;
-    }
+    #toast { position: fixed; top: 4vh; right: 4vw; background: #10b981; color: white; padding: 2vh 3vw; border-radius: 2vh; font-size: 3vh; font-weight: bold; display: none; z-index: 10000; }
 </style>
 
-<!-- AUDIO FILES -->
+<!-- AUDIO FILES (Simplified) -->
 <audio id="sound-score" src="mixkit-sci-fi-reject-notification-896.wav" preload="auto"></audio>
 <audio id="sound-result" src="mixkit-sci-fi-reject-notification-896%20(2).wav" preload="auto"></audio>
-
-<div class="zero-gravity-bg" id="zg-bg"></div>
 
 <!-- START SCREEN -->
 <div id="start-overlay" onclick="startApp()">
     <button class="start-btn">Start Live TV Display</button>
-    <p style="margin-top:2vh; font-size:2vh; color:#fb7185; font-weight:bold;">Optimized for 2GB RAM TV - Images Only - Anti-Sleep Active</p>
-</div>
-
-<!-- RAM-FRIENDLY FEST GALLERY (IMAGE ONLY) -->
-<div id="gallery-overlay">
-    <!-- ONLY ONE IMAGE TAG EXISTS TO PREVENT CRASHES -->
-    <img id="tv-img-player" class="gallery-media" src="" alt="Gallery Image">
-    
-    <div class="gallery-badge">
-        <span style="font-size:4vh;">📸</span> 
-        <div>
-            <div style="font-size: 1.5vh; color: #fbbf24; text-transform: uppercase;">Fest Gallery</div>
-            <div style="font-size: 2.5vh; line-height: 1;">മെഹ്ഫിലെ നൂർ 2026</div>
-        </div>
-    </div>
+    <p style="margin-top:2vh; font-size:2vh; color:#fbbf24; font-weight:bold;">Ultra-Lite Mode for 2GB RAM Active</p>
 </div>
 
 <div id="toast">പുതിയ അപ്ഡേറ്റ്!</div>
@@ -188,7 +135,7 @@
     
     <!-- PAGE 1: SCORE & STATS -->
     <div id="view-1" class="view-container view-active">
-        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026"></div>
+        <div class="header"><img src="https://i.ibb.co/98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026" onerror="this.style.display='none'"></div>
         <div class="page-title">ടീം പോയിന്റുകൾ (TOTAL SCORE)</div>
         <div class="dashboard-content">
             <div class="team-block"><div class="team-name team-a" id="name-teamA-1">Team A</div><div class="huge-points num-font" id="score-teamA">0</div></div>
@@ -204,14 +151,14 @@
 
     <!-- PAGE 2: LATEST RESULTS -->
     <div id="view-2" class="view-container">
-        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026"></div>
+        <div class="header"><img src="https://i.ibb.co/98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026" onerror="this.style.display='none'"></div>
         <div class="page-title">ഏറ്റവും പുതിയ ഫലങ്ങൾ (LATEST RESULTS)</div>
         <div class="results-grid" id="results-grid-container"></div>
     </div>
 
     <!-- PAGE 3: CATEGORY SCORES -->
     <div id="view-3" class="view-container">
-        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026"></div>
+        <div class="header"><img src="https://i.ibb.co/98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" alt="Mehfile Noor 2026" onerror="this.style.display='none'"></div>
         <div class="page-title">വിഭാഗം തിരിച്ചുള്ള പോയിന്റുകൾ (CATEGORY SCORES)</div>
         <div class="category-container">
             <div class="cat-box"><div class="cat-title">ജൂനിയർ (Junior)</div><div class="cat-team-row"><span class="cat-tname a" id="name-teamA-2">Team A</span><span class="cat-pts num-font" id="cat-j-a">0</span></div><div class="cat-team-row"><span class="cat-tname b" id="name-teamB-2">Team B</span><span class="cat-pts num-font" id="cat-j-b">0</span></div></div>
@@ -222,7 +169,7 @@
 
     <!-- PAGE 4: JUNIOR TABLE -->
     <div id="view-4" class="view-container">
-        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img"></div>
+        <div class="header"><img src="https://i.ibb.co/98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" onerror="this.style.display='none'"></div>
         <div class="page-title">പോയിന്റ് ടേബിൾ - ജൂനിയർ (JUNIOR)</div>
         <div class="table-container">
             <table class="pt-header-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup>
@@ -234,8 +181,7 @@
 
     <!-- PAGE 5: SENIOR + GENERAL (PART 1) -->
     <div id="view-5" class="view-container">
-        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img"></div>
-        <!-- TITLE UPDATED: NO MENTION OF STAGE -->
+        <div class="header"><img src="https://i.ibb.co/98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" onerror="this.style.display='none'"></div>
         <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (PART 1)</div>
         <div class="table-container">
             <table class="pt-header-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup>
@@ -247,8 +193,7 @@
 
     <!-- PAGE 6: SENIOR + GENERAL (PART 2) -->
     <div id="view-6" class="view-container">
-        <div class="header"><img src="98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img"></div>
-        <!-- TITLE UPDATED: NO MENTION OF NON-STAGE -->
+        <div class="header"><img src="https://i.ibb.co/98232f0908c9d480f91da32c8100c1d0.png" class="fest-logo-img" onerror="this.style.display='none'"></div>
         <div class="page-title">പോയിന്റ് ടേബിൾ - സീനിയർ & ജനറൽ (PART 2)</div>
         <div class="table-container">
             <table class="pt-header-table"><colgroup><col style="width:28%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"><col style="width:12%"></colgroup>
@@ -261,55 +206,26 @@
 
 <script>
     var appStarted = false;
-    var tvWakeLockAudio = null; 
-
-    // Reduced Orbs for 2GB RAM
-    function createZeroGravity() {
-        var bg = document.getElementById('zg-bg');
-        var colors = ['#ec4899', '#8b5cf6', '#fbbf24', '#34d399'];
-        for(var i=0; i<4; i++) {
-            var orb = document.createElement('div');
-            orb.className = 'orb';
-            var size = Math.random() * 10 + 5; 
-            orb.style.width = size + 'vh'; orb.style.height = size + 'vh';
-            orb.style.left = Math.random() * 90 + 'vw'; orb.style.top = Math.random() * 80 + 'vh';
-            orb.style.backgroundColor = colors[i];
-            orb.style.animationDuration = (Math.random() * 5 + 8) + 's'; 
-            bg.appendChild(orb);
-        }
-    }
-    createZeroGravity();
-
-    // ==========================================
-    // NON-CRASH TV WAKE LOCK (Zero Hard Hacks)
-    // ==========================================
     var wakeLockObj = null;
+
+    // Only use standard wake-lock, removed heavy media hacks
     async function preventSleep() {
         if(!appStarted) return;
-        
-        // 1. Standard WakeLock API
         try {
             if ('wakeLock' in navigator) { 
                 if(wakeLockObj) await wakeLockObj.release().catch(e=>{}); 
                 wakeLockObj = await navigator.wakeLock.request('screen');
             }
         } catch(e) {}
-        
-        // 2. Tizen TV / WebOS lightweight native request
         try { if (typeof tizen !== 'undefined' && tizen.power) tizen.power.request('SCREEN', 'SCREEN_NORMAL'); } catch(e) {}
-
-        // 3. Keep Audio playing silently
-        if (tvWakeLockAudio && tvWakeLockAudio.paused) { tvWakeLockAudio.play().catch(e=>{}); }
     }
 
     function simulateInteraction() {
         if (!appStarted) return;
-        // Simulating a tiny, invisible keyboard event tricks the TV into thinking a user pressed the remote, resetting the sleep timer
         try { document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Shift', bubbles: true })); } catch(e){}
         preventSleep();
     }
 
-    // Ping interactions every 20 seconds
     setInterval(simulateInteraction, 20000); 
     document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'visible') preventSleep(); });
 
@@ -335,18 +251,9 @@
         
         unlockAudio(document.getElementById('sound-score'));
         unlockAudio(document.getElementById('sound-result'));
-        
-        // Silent Audio Loop (Very safe for RAM)
-        try {
-            tvWakeLockAudio = document.getElementById('sound-score').cloneNode();
-            tvWakeLockAudio.loop = true;
-            tvWakeLockAudio.muted = true; 
-            tvWakeLockAudio.volume = 0;
-            tvWakeLockAudio.play().catch(e=>{});
-        } catch(e) {}
 
         appStarted = true; 
-        simulateInteraction(); // Kickstart the anti-sleep
+        simulateInteraction();
         renderAll();
     }
 
@@ -359,85 +266,20 @@
     }
 
     function showToast(msg) {
-        var t = document.getElementById('toast'); t.innerText = msg; t.className = 'show';
-        setTimeout(function(){ t.className = ''; }, 5000);
+        var t = document.getElementById('toast'); 
+        t.innerText = msg; 
+        t.style.display = 'block';
+        setTimeout(function(){ t.style.display = 'none'; }, 5000);
     }
 
-    // ==========================================
-    // RAM-SAFE GALLERY LOGIC (IMAGE ONLY)
-    // ==========================================
-    var galleryItems = []; 
-    var currentGalleryIndex = 0;
-    var galleryActive = false;
-    var galleryTimer = null;
-
-    function scheduleNextGallery() {
-        if(galleryTimer) clearTimeout(galleryTimer);
-        galleryTimer = setTimeout(triggerGallery, 240000); // 4 minutes
-    }
-    scheduleNextGallery();
-
-    function triggerGallery() {
-        if (!galleryItems || galleryItems.length === 0 || galleryActive) {
-            if(!galleryActive) scheduleNextGallery();
-            return;
-        }
-        
-        // Network Check: Skip gallery if WiFi dropped so it doesn't hang
-        if(navigator.onLine === false) { scheduleNextGallery(); return; }
-
-        galleryActive = true;
-        if(galleryTimer) clearTimeout(galleryTimer);
-        
-        document.getElementById('gallery-overlay').style.display = 'block';
-        setTimeout(function() { document.getElementById('gallery-overlay').style.opacity = '1'; }, 100);
-
-        currentGalleryIndex = 0;
-        playNextGalleryItem();
-    }
-
-    function playNextGalleryItem() {
-        if(currentGalleryIndex >= galleryItems.length || navigator.onLine === false) {
-            endGalleryShow();
-            return;
-        }
-
-        var item = galleryItems[currentGalleryIndex];
-        var imgPlayer = document.getElementById('tv-img-player');
-        
-        imgPlayer.classList.remove('active');
-        imgPlayer.src = "";
-
-        // Display Image
-        imgPlayer.src = item.url;
-        imgPlayer.classList.add('active');
-        currentGalleryIndex++;
-        
-        // Wait specified duration, then go to next
-        setTimeout(playNextGalleryItem, (item.duration || 5) * 1000);
-    }
-
-    function endGalleryShow() {
-        document.getElementById('gallery-overlay').style.opacity = '0';
-        // Clear memory
-        document.getElementById('tv-img-player').src = "";
-        
-        setTimeout(function() { 
-            document.getElementById('gallery-overlay').style.display = 'none'; 
-            galleryActive = false;
-            scheduleNextGallery();
-        }, 1000);
-    }
-
-    // MAIN TV CAROUSEL
+    // MAIN TV CAROUSEL - Increased time to 20 seconds to give TV more rest
     var currentViewIndex = 1;
     setInterval(function() {
-        if(galleryActive) return; 
         for(var i=1; i<=6; i++) document.getElementById('view-' + i).className = 'view-container';
         currentViewIndex++;
         if(currentViewIndex > 6) currentViewIndex = 1;
         document.getElementById('view-' + currentViewIndex).className = 'view-container view-active';
-    }, 15000); 
+    }, 20000); 
 
     // FIREBASE SETUP
     var firebaseConfig = {
@@ -465,10 +307,6 @@
                 var d = snap.data(); 
                 if (d.teams) state.teams = d.teams; 
                 if (d.programs) state.programs = d.programs; 
-                if (d.gallery) {
-                    // FORCE REMOVE VIDEOS: Automatically filter out videos to guarantee zero RAM crashes
-                    galleryItems = d.gallery.filter(function(item) { return item.type !== 'video'; });
-                }
                 renderAll(); 
             }
         });
@@ -490,7 +328,6 @@
             var mlName = names[0];
             var enName = names.length > 1 ? "<span class='p-name-eng'>" + names[1] + "</span>" : "";
 
-            // ONLY TAGS FOR GROUP AND GEN (No mention of Stage or Non-Stage)
             var tTag = ""; 
             if(tProg.isGroup) tTag += "<span class='s-tag s-grp'>Group</span>";
             if(tProg.cat === 'General') tTag += "<span class='s-tag s-gen'>Gen</span>";
@@ -562,7 +399,6 @@
         if (prevTotalRes !== -1 && sortedRes.length > prevTotalRes) { 
             playSound('result');
             showToast("🔥 പുതിയ റിസൾട്ട് പ്രസിദ്ധീകരിച്ചു! 🔥");
-            try { confetti({ particleCount: 20, spread: 60, origin: { y: 0.8 } }); } catch(e){} 
         }
         
         prevScoreA = stats.teamA.total; prevScoreB = stats.teamB.total; prevTotalRes = sortedRes.length;
@@ -597,7 +433,6 @@
         }
         document.getElementById('results-grid-container').innerHTML = resHtml;
 
-        // SEPARATE INTO JUNIOR AND SENIOR/GEN (Merged)
         var jProgs = [], sgProgs = [];
         state.programs.forEach(prg => {
             if(prg.cat === 'Junior') { 
@@ -607,7 +442,6 @@
             }
         });
 
-        // Split the Senior/Gen array in half to fit perfectly onto two pages without scrolling
         var halfLength = Math.ceil(sgProgs.length / 2);
         var sgPart1 = sgProgs.slice(0, halfLength);
         var sgPart2 = sgProgs.slice(halfLength);
@@ -617,5 +451,4 @@
         document.getElementById('table-body-senior-2').innerHTML = generateTableRows(sgPart2);
     }
 </script>
-
 
